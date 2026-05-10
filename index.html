@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>后台管理首页</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #1f2937;
+      color: white;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 20px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu a {
+      color: #d1d5db;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .menu a:hover {
+      background: #374151;
+      color: white;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .logout-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cards {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-title {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .filter input {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .filter button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #16a34a;
+      color: white;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    .status-enabled {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .status-disabled {
+      color: #dc2626;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>管理后台</h2>
+
+      <nav class="menu">
+        <a href="#">首页</a>
+        <a href="#">用户管理</a>
+        <a href="#">订单管理</a>
+        <a href="#">系统设置</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <h1>首页概览</h1>
+        <button class="logout-button">退出登录</button>
+      </header>
+
+      <section class="cards">
+        <div class="card">
+          <div class="card-title">用户数</div>
+          <div class="card-value">1024</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">订单数</div>
+          <div class="card-value">256</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">销售额</div>
+          <div class="card-value">¥88,000</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="filter">
+          <input id="keywordInput" type="text" placeholder="请输入用户名" />
+          <button id="searchButton">查询</button>
+          <button id="loadButton">加载用户</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户名</th>
+              <th>角色</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+
+          <tbody id="userTableBody">
+            <tr>
+              <td colspan="4">暂无数据</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const users = [
+      { id: 1, name: '张三', role: '管理员', status: 'enabled' },
+      { id: 2, name: '李四', role: '运营', status: 'disabled' },
+      { id: 3, name: '王五', role: '客服', status: 'enabled' }
+    ];
+
+    const keywordInput = document.querySelector('#keywordInput');
+    const searchButton = document.querySelector('#searchButton');
+    const loadButton = document.querySelector('#loadButton');
+    const userTableBody = document.querySelector('#userTableBody');
+
+    function renderUsers(userList) {
+      if (userList.length === 0) {
+        userTableBody.innerHTML = '<tr><td colspan="4">没有匹配的用户</td></tr>';
+        return;
+      }
+
+      userTableBody.innerHTML = userList
+        .map(user => {
+          const statusText = user.status === 'enabled' ? '启用' : '禁用';
+          const statusClass = user.status === 'enabled'
+            ? 'status-enabled'
+            : 'status-disabled';
+
+          return `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.role}</td>
+              <td class="${statusClass}">${statusText}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    }
+
+    loadButton.addEventListener('click', () => {
+      renderUsers(users);
+    });
+
+    searchButton.addEventListener('click', () => {
+      const keyword = keywordInput.value.trim();
+
+      const filteredUsers = users.filter(user => {
+        return user.name.includes(keyword);
+      });
+
+      renderUsers(filteredUsers);
+    });
+  </script>
+</body>
+</html>
