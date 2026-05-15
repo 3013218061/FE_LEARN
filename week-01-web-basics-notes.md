@@ -952,3 +952,94 @@ response.json()
 Network 面板
 Spring Boot API 联调基础
 ```
+
+## 21. 当前学习进度复盘
+
+到目前为止，`index.html` 已经不只是静态页面，而是一个小型原生 JavaScript 用户管理练习。
+
+当前页面已经覆盖：
+
+```text
+查：加载全部用户、按用户名查询
+增：新增用户并做基础表单校验
+改：编辑用户、保存修改、取消编辑
+删：删除前确认，删除后重新渲染
+状态：启用 / 禁用用户
+异步：模拟接口延迟、loading、error
+安全：XSS 测试数据、escapeHtml、textContent
+```
+
+这意味着第一阶段的 CRUD 主线已经完成。
+
+如果用后端开发的视角看，现在页面里已经有几层职责：
+
+```text
+users / editingUserId        类似内存中的数据状态
+fetchUsers                   类似 API / Service 层
+renderUsers                  类似把 VO 转成页面展示
+enterEditMode / enterCreateMode  类似表单状态管理
+addEventListener             类似 Controller 入口，只不过入口是用户点击事件
+```
+
+最重要的心智模型仍然是：
+
+```text
+用户操作 -> 修改数据或状态 -> 重新渲染页面 -> UI 变化
+```
+
+这个模型后面进入 React 时会变成：
+
+```text
+用户操作 -> setState -> React 根据 state 自动重新渲染
+```
+
+所以当前阶段不是在学“过时写法”，而是在理解 React 背后的底层问题：
+
+```text
+页面结构从哪里来？
+事件怎么触发？
+数据如何变成 UI？
+状态变化后为什么要重新渲染？
+为什么直接拼 innerHTML 有安全风险？
+为什么 React 想让我们少手动操作 DOM？
+```
+
+## 22. 下一节建议：DevTools 与真实 fetch
+
+下一节建议从浏览器开发者工具开始，而不是立刻进入 React。
+
+重点练习顺序：
+
+```text
+1. Elements
+   - 查看 HTML 被浏览器解析后的 DOM 树
+   - 查看某个按钮、输入框、表格行对应的 CSS
+   - 理解盒模型中的 content / padding / border / margin
+
+2. Console
+   - 直接执行 document.querySelector(...)
+   - 查看 users、editingUserId 等变量
+   - 故意制造一个错误，观察报错位置和调用栈
+
+3. Network
+   - 创建 users.json
+   - 使用 fetch('/users.json') 请求本地 JSON
+   - 查看请求 URL、状态码、响应头、响应体
+```
+
+对应的下一步代码目标是：
+
+```text
+把现在的 setTimeout 模拟接口
+  ↓
+改成真正从 users.json 读取数据
+```
+
+这样就可以把“前端页面”和“后端接口”的边界讲清楚：
+
+```text
+前端关心：什么时候发请求、怎么处理 loading/error/data、怎么渲染页面
+后端关心：返回什么 URL、什么状态码、什么 JSON 结构
+```
+
+这也是后面 Spring Boot REST API 联调的前置基础。

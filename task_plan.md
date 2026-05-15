@@ -44,12 +44,13 @@ HTML/CSS/JavaScript
 - `index.html`：后台管理首页练习页面。
 - `week-01-web-basics-notes.md`：第一周 Web 基础学习笔记。
 
-当前完成情况：进行中，已完成核心实践的大部分内容。
+当前完成情况：进行中，第一阶段 CRUD 主线已经完成，下一步进入 DevTools、真实 fetch 与 CSS 细节补齐。
 
 已完成任务：
 
 - [x] 搭建后台首页基础结构：左侧菜单、顶部导航、数据卡片、查询区域、数据表格。
 - [x] 使用 CSS Flex 完成左右布局、卡片横向排列、表单与表格样式。
+- [x] 使用 CSS Grid 完成新增/编辑用户表单的基础布局。
 - [x] 使用 JavaScript `querySelector` 获取页面元素。
 - [x] 使用 `addEventListener` 绑定按钮点击事件。
 - [x] 使用数组数据渲染用户表格。
@@ -62,14 +63,16 @@ HTML/CSS/JavaScript
 - [x] 使用 `document.createElement` + `textContent` 重构表格渲染。
 - [x] 增加“新增用户”表单，完成基础校验、追加数据、重新渲染。
 - [x] 增加“删除用户”功能，完成确认、数组删除、重新渲染。
+- [x] 增加“编辑用户”功能，理解新增与编辑表单复用。
+- [x] 增加“启用/禁用用户”功能，理解状态切换。
+- [x] 初步复盘当前单文件代码分层：数据状态层、DOM 引用层、API 模拟层、表单状态层、渲染层、事件处理层。
 
 待完成任务：
 
-- [ ] 增加“编辑用户”功能，理解新增与编辑表单复用。
-- [ ] 增加“启用/禁用用户”功能，理解状态切换。
-- [ ] 讲解浏览器开发者工具：Elements、Console、Network。
+- [ ] 系统讲解浏览器开发者工具：Elements、Console、Network。
+- [ ] 创建 `users.json` 并将模拟请求改成真实 `fetch`，练习 Network 面板。
 - [ ] 讲解真实 `fetch` 请求与 Spring Boot API 对接方式。
-- [ ] 讲解 CSS Grid、定位、响应式基础。
+- [ ] 讲解 CSS 盒模型、定位、响应式基础。
 - [ ] 对第一阶段进行验收复盘。
 
 ### 第二阶段：TypeScript 与工程化
@@ -153,10 +156,10 @@ UI = f(state)
 
 ## 5. 下一步建议
 
-优先继续完成第一阶段剩余 CRUD 能力：
+CRUD 主线已经完成，优先进入第一阶段收尾能力：
 
-1. 实现编辑用户功能。
-2. 实现启用/禁用用户功能。
-3. 复盘当前页面的数据流和事件流。
-4. 使用浏览器 DevTools 检查 DOM、Console、Network。
-5. 将模拟 API 函数改写成真实 `fetch` 请求模板。
+1. 使用浏览器 DevTools 检查 DOM、CSS、Console 日志和 Network 请求。
+2. 创建 `users.json`，把当前 `fetchUsers` 从 `setTimeout` 模拟改成真实 `fetch('/users.json')`。
+3. 观察 Network 面板中的请求 URL、状态码、响应头和 JSON 响应体。
+4. 补齐 CSS 盒模型、定位、响应式布局基础。
+5. 对第一阶段做验收复盘，总结进入 TypeScript / Vite / React 前必须掌握的知识点。

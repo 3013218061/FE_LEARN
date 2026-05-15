@@ -171,7 +171,7 @@ e14a141 add week one web basics exercise
 
 ### 5. 当前进度概览
 
-第一阶段 Web 基础：进行中，完成度较高。
+第一阶段 Web 基础：进行中，CRUD 主线已经完成，正在进入第一阶段收尾。
 
 已具备的页面能力：
 
@@ -179,51 +179,48 @@ e14a141 add week one web basics exercise
 - 表格展示。
 - 查询。
 - 新增。
+- 编辑。
 - 删除。
+- 启用 / 禁用状态切换。
 - 模拟接口请求。
-- loading / empty / error。
+- loading / empty / error / success 状态。
 - 表单校验。
+- 新增 / 编辑表单复用。
 - XSS 防护。
+- 使用 DOM API 安全渲染用户输入和接口数据。
 
 仍需补齐：
 
-- 编辑用户。
-- 启用/禁用用户。
 - 浏览器 DevTools 系统练习。
-- 真实 `fetch` 请求模板。
-- Network 面板观察请求。
-- CSS Grid、定位、响应式。
+- 创建 `users.json` 并改造真实 `fetch` 请求。
+- Network 面板观察请求、状态码和 JSON 响应。
+- CSS 盒模型、定位、响应式。
 - 第一阶段验收复盘。
 
 ### 6. 下一步建议
 
 建议下一次继续按以下顺序推进：
 
-1. 在 `index.html` 中实现“编辑用户”功能。
-   - 增加 `editingUserId` 状态。
-   - 新增按钮根据状态变成“新增用户 / 保存修改”。
-   - 点击编辑时，将当前用户数据回填到表单。
-   - 保存后更新数组并重新渲染。
+1. 开始浏览器开发者工具练习。
+   - Elements：查看 DOM 层级、CSS 样式来源、盒模型。
+   - Console：执行 JS、查看变量、观察报错。
+   - Network：观察请求 URL、状态码、响应头、响应体。
 
-2. 实现“启用/禁用用户”功能。
-   - 操作列增加状态切换按钮。
-   - 点击后修改 `status`。
-   - 重新渲染表格。
+2. 创建 `users.json` 并改造加载逻辑。
+   - 将当前 `fetchUsers` 从 `setTimeout` 模拟改成真实 `fetch('/users.json')`。
+   - 用 Network 面板观察 JSON 文件请求。
+   - 讲清楚 `response.ok`、`response.json()` 和 HTTP 状态码。
 
-3. 对当前页面做一次代码结构复盘。
-   - 数据层。
-   - API 层。
-   - 渲染层。
-   - 表单层。
-   - 事件层。
+3. 补齐 CSS 基础细节。
+   - 盒模型：content、padding、border、margin。
+   - 定位：static、relative、absolute、fixed、sticky。
+   - 响应式：媒体查询、窄屏布局调整。
 
-4. 开始浏览器开发者工具练习。
-   - Elements：看 DOM 与 CSS。
-   - Console：看日志与错误。
-   - Network：为后续真实 fetch 做准备。
-
-5. 更新 `week-01-web-basics-notes.md`。
-   - 补充异步请求、XSS、DOM API、新增/删除功能笔记。
+4. 做第一阶段验收复盘。
+   - 能否独立写出后台页面结构。
+   - 能否解释数据如何渲染成表格。
+   - 能否解释一次点击事件如何改变 UI。
+   - 能否说明传统 DOM 写法和后续 React 状态驱动模型的关系。
 
 ### 7. 风险与注意事项
 
