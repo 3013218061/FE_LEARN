@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>后台管理首页</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #1f2937;
+      color: white;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 20px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu a {
+      color: #d1d5db;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .menu a:hover {
+      background: #374151;
+      color: white;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .logout-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cards {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-title {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .filter input {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .filter button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #16a34a;
+      color: white;
+      cursor: pointer;
+    }
+
+    .filter .danger-button {
+      background: #dc2626;
+    }
+
+    .form-panel {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    .form-panel label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .form-panel input,
+    .form-panel select {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .form-panel button {
+      align-self: end;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    .form-message {
+      grid-column: 1 / -1;
+      min-height: 20px;
+      color: #dc2626;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    .status-enabled {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .status-disabled {
+      color: #dc2626;
+      font-weight: bold;
+    }
+
+    .edit-button,
+    .toggle-button,
+    .delete-button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .edit-button,
+    .toggle-button {
+      margin-right: 8px;
+    }
+
+    .edit-button {
+      background: #2563eb;
+    }
+
+    .toggle-button {
+      background: #16a34a;
+    }
+
+    .toggle-button.warning {
+      background: #f59e0b;
+    }
+
+    .delete-button {
+      background: #dc2626;
+    }
+
+    .secondary-button {
+      background: #6b7280 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>管理后台</h2>
+
+      <nav class="menu">
+        <a href="#">首页</a>
+        <a href="#">用户管理</a>
+        <a href="#">订单管理</a>
+        <a href="#">系统设置</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <h1>首页概览</h1>
+        <button class="logout-button">退出登录</button>
+      </header>
+
+      <section class="cards">
+        <div class="card">
+          <div class="card-title">用户数</div>
+          <div class="card-value">1024</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">订单数</div>
+          <div class="card-value">256</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">销售额</div>
+          <div class="card-value">¥88,000</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="form-panel">
+          <label>
+            用户名
+            <input id="nameInput" type="text" placeholder="例如：赵六" />
+          </label>
+
+          <label>
+            角色
+            <input id="roleInput" type="text" placeholder="例如：财务" />
+          </label>
+
+          <label>
+            状态
+            <select id="statusSelect">
+              <option value="enabled">启用</option>
+              <option value="disabled">禁用</option>
+            </select>
+          </label>
+
+          <button id="addButton">新增用户</button>
+          <button id="cancelEditButton" class="secondary-button" hidden>取消编辑</button>
+          <div id="formMessage" class="form-message"></div>
+        </div>
+
+        <div class="filter">
+          <input id="keywordInput" type="text" placeholder="请输入用户名" />
+          <button id="searchButton">查询</button>
+          <button id="loadButton">加载用户</button>
+          <button id="errorButton" class="danger-button">模拟失败</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户名</th>
+              <th>角色</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+
+          <tbody id="userTableBody">
+            <tr>
+              <td colspan="5">暂无数据</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const users = [
+      { id: 1, name: '张三', role: '管理员', status: 'enabled' },
+      { id: 2, name: '李四', role: '运营', status: 'disabled' },
+      { id: 3, name: '王五', role: '客服', status: 'enabled' },
+      { id: 4, name: '<img src=x onerror=alert("xss")>', role: '<button onclick=alert("xss")>恶意角色</button>', status: 'enabled' }
+    ];
+
+    let editingUserId = null;
+
+    const nameInput = document.querySelector('#nameInput');
+    const roleInput = document.querySelector('#roleInput');
+    const statusSelect = document.querySelector('#statusSelect');
+    const addButton = document.querySelector('#addButton');
+    const cancelEditButton = document.querySelector('#cancelEditButton');
+    const formMessage = document.querySelector('#formMessage');
+    const keywordInput = document.querySelector('#keywordInput');
+    const searchButton = document.querySelector('#searchButton');
+    const loadButton = document.querySelector('#loadButton');
+    const errorButton = document.querySelector('#errorButton');
+    const userTableBody = document.querySelector('#userTableBody');
+
+    function fetchUsers({ keyword = '', shouldFail = false } = {}) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (shouldFail) {
+            reject(new Error('服务器暂时不可用'));
+            return;
+          }
+
+          const result = keyword
+            ? users.filter(user => user.name.includes(keyword))
+            : users;
+
+          resolve(result);
+        }, 800);
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function renderMessage(message) {
+      userTableBody.innerHTML = `<tr><td colspan="5">${escapeHtml(message)}</td></tr>`;
+    }
+
+    function renderFormMessage(message, type = 'error') {
+      formMessage.textContent = message;
+      formMessage.style.color = type === 'success' ? '#16a34a' : '#dc2626';
+    }
+
+    function clearUserForm() {
+      nameInput.value = '';
+      roleInput.value = '';
+      statusSelect.value = 'enabled';
+    }
+
+    function enterCreateMode() {
+      editingUserId = null;
+      addButton.textContent = '新增用户';
+      cancelEditButton.hidden = true;
+      clearUserForm();
+    }
+
+    function enterEditMode(user) {
+      editingUserId = user.id;
+      nameInput.value = user.name;
+      roleInput.value = user.role;
+      statusSelect.value = user.status;
+      addButton.textContent = '保存修改';
+      cancelEditButton.hidden = false;
+      renderFormMessage(`正在编辑用户：${user.name}`, 'success');
+    }
+
+    function appendCell(row, text, className = '') {
+      const cell = document.createElement('td');
+      cell.textContent = text;
+
+      if (className) {
+        cell.className = className;
+      }
+
+      row.appendChild(cell);
+    }
+
+    function editUser(userId) {
+      const user = users.find(item => item.id === userId);
+
+      if (!user) {
+        renderFormMessage('用户不存在');
+        return;
+      }
+
+      enterEditMode(user);
+    }
+
+    function toggleUserStatus(userId) {
+      const user = users.find(item => item.id === userId);
+
+      if (!user) {
+        renderFormMessage('用户不存在');
+        return;
+      }
+
+      user.status = user.status === 'enabled' ? 'disabled' : 'enabled';
+      renderUsers(users);
+      renderFormMessage(`已${user.status === 'enabled' ? '启用' : '禁用'}用户：${user.name}`, 'success');
+    }
+
+    function deleteUser(userId) {
+      const user = users.find(item => item.id === userId);
+
+      if (!user) {
+        renderFormMessage('用户不存在');
+        return;
+      }
+
+      const confirmed = window.confirm(`确认删除用户「${user.name}」吗？`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      const index = users.findIndex(item => item.id === userId);
+      users.splice(index, 1);
+
+      if (editingUserId === userId) {
+        enterCreateMode();
+      }
+
+      renderUsers(users);
+      renderFormMessage('删除用户成功', 'success');
+    }
+
+    function appendActionCell(row, user) {
+      const cell = document.createElement('td');
+      const editButton = document.createElement('button');
+      const toggleButton = document.createElement('button');
+      const deleteButton = document.createElement('button');
+
+      editButton.type = 'button';
+      editButton.className = 'edit-button';
+      editButton.textContent = '编辑';
+      editButton.addEventListener('click', () => {
+        editUser(user.id);
+      });
+
+      toggleButton.type = 'button';
+      toggleButton.className = user.status === 'enabled'
+        ? 'toggle-button warning'
+        : 'toggle-button';
+      toggleButton.textContent = user.status === 'enabled' ? '禁用' : '启用';
+      toggleButton.addEventListener('click', () => {
+        toggleUserStatus(user.id);
+      });
+
+      deleteButton.type = 'button';
+      deleteButton.className = 'delete-button';
+      deleteButton.textContent = '删除';
+      deleteButton.addEventListener('click', () => {
+        deleteUser(user.id);
+      });
+
+      cell.appendChild(editButton);
+      cell.appendChild(toggleButton);
+      cell.appendChild(deleteButton);
+      row.appendChild(cell);
+    }
+
+    function renderUsers(userList) {
+      if (userList.length === 0) {
+        renderMessage('没有匹配的用户');
+        return;
+      }
+
+      userTableBody.innerHTML = '';
+
+      userList.forEach(user => {
+        const row = document.createElement('tr');
+        const statusText = user.status === 'enabled' ? '启用' : '禁用';
+        const statusClass = user.status === 'enabled'
+          ? 'status-enabled'
+          : 'status-disabled';
+
+        appendCell(row, user.id);
+        appendCell(row, user.name);
+        appendCell(row, user.role);
+        appendCell(row, statusText, statusClass);
+        appendActionCell(row, user);
+
+        userTableBody.appendChild(row);
+      });
+    }
+
+    addButton.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      const role = roleInput.value.trim();
+      const status = statusSelect.value;
+
+      if (!name) {
+        renderFormMessage('用户名不能为空');
+        return;
+      }
+
+      if (!role) {
+        renderFormMessage('角色不能为空');
+        return;
+      }
+
+      if (editingUserId !== null) {
+        const user = users.find(item => item.id === editingUserId);
+
+        if (!user) {
+          renderFormMessage('用户不存在');
+          enterCreateMode();
+          return;
+        }
+
+        user.name = name;
+        user.role = role;
+        user.status = status;
+
+        renderUsers(users);
+        enterCreateMode();
+        renderFormMessage('保存修改成功', 'success');
+        return;
+      }
+
+      const nextId = Math.max(...users.map(user => user.id)) + 1;
+      const newUser = {
+        id: nextId,
+        name,
+        role,
+        status
+      };
+
+      users.push(newUser);
+      renderUsers(users);
+      enterCreateMode();
+      renderFormMessage('新增用户成功', 'success');
+    });
+
+    cancelEditButton.addEventListener('click', () => {
+      enterCreateMode();
+      renderFormMessage('已取消编辑', 'success');
+    });
+
+    loadButton.addEventListener('click', async () => {
+      renderMessage('加载中...');
+
+      try {
+        const userList = await fetchUsers();
+        renderUsers(userList);
+      } catch (error) {
+        renderMessage('加载失败，请稍后重试');
+      }
+    });
+
+    searchButton.addEventListener('click', async () => {
+      renderMessage('查询中...');
+
+      try {
+        const keyword = keywordInput.value.trim();
+        const userList = await fetchUsers({ keyword });
+
+        renderUsers(userList);
+      } catch (error) {
+        renderMessage('查询失败，请稍后重试');
+      }
+    });
+
+    errorButton.addEventListener('click', async () => {
+      renderMessage('加载中...');
+
+      try {
+        const userList = await fetchUsers({ shouldFail: true });
+        renderUsers(userList);
+      } catch (error) {
+        renderMessage('加载失败，请稍后重试');
+      }
+    });
+  </script>
+</body>
+</html>
