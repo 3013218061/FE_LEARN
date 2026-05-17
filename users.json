@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "张三",
+    "role": "管理员",
+    "status": "enabled"
+  },
+  {
+    "id": 2,
+    "name": "李四",
+    "role": "运营",
+    "status": "disabled"
+  },
+  {
+    "id": 3,
+    "name": "王五",
+    "role": "客服",
+    "status": "enabled"
+  },
+  {
+    "id": 4,
+    "name": "<img src=x onerror=alert(\"xss\")>",
+    "role": "<button onclick=alert(\"xss\")>恶意角色</button>",
+    "status": "enabled"
+  }
+]
