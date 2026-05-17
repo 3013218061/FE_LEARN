@@ -116,13 +116,20 @@ layout
 - `padding`、`margin`、`border-radius`、`box-shadow` 控制常见视觉样式。
 - `display: grid` 用于新增用户表单布局。
 - 表格、按钮、状态文本的基础样式。
+- 盒模型：content、padding、border、margin，以及 `box-sizing: border-box`。
+- Flex 与 Grid 的区别：Flex 解决一维排列，Grid 解决二维布局。
+- `position`：static、relative、absolute、fixed、sticky 的基本用途。
+- 响应式布局与 `@media` 媒体查询。
 
-待补充：
+关键心智模型：
 
-- CSS Grid 更系统的二维布局。
-- 定位 `position`。
-- 响应式布局与媒体查询。
-- 盒模型细节。
+```text
+盒模型：解释元素为什么占这么大
+Flex：解决一维排列
+Grid：解决二维排列
+position：解决脱离普通流的特殊位置
+响应式：解决不同屏幕宽度下的布局变化
+```
 
 ### 3.3 JavaScript 基础
 
@@ -171,7 +178,7 @@ API 层：请求接口、处理 HTTP 状态码、返回 JSON 或抛错
 
 ### 3.6 表单与校验
 
-当前新增用户表单已覆盖：
+当前表单能力已覆盖：
 
 - 读取 `input.value`。
 - 读取 `select.value`。
@@ -181,8 +188,8 @@ API 层：请求接口、处理 HTTP 状态码、返回 JSON 或抛错
 - 校验失败后 `return` 阻止继续执行。
 - 新增成功后清空表单。
 - 使用 `textContent` 显示表单提示。
-
-后续编辑功能会引入表单复用。
+- 使用 `editingUserId` 区分新增模式与编辑模式。
+- 通过 `enterCreateMode` / `enterEditMode` 复用同一套表单。
 
 ### 3.7 删除功能
 
@@ -264,13 +271,71 @@ element.innerHTML = `<td>${user.name}</td>`;
 
 这为后续迁移到 TypeScript 和 React 提供了天然边界。
 
-## 6. 后续重点发现问题
+## 6. DevTools 与接口联调发现
 
-需要继续补齐：
+### 6.1 DevTools 心智模型
 
-- 编辑用户功能需要考虑“当前正在编辑谁”的状态。
-- 新增和编辑表单应复用，但提交逻辑不同。
-- 启用/禁用功能需要理解状态切换。
-- 真实接口需要学习 `fetch`、HTTP 状态码、JSON、错误处理、跨域。
-- 浏览器开发者工具需要系统训练，尤其是 Console 与 Network。
+对 Java 后端开发者来说，可以这样类比：
+
+```text
+Elements   ≈ 查看运行时页面结构，类似看对象当前状态
+Console    ≈ 浏览器里的日志和 REPL，类似 Java 控制台 + JS 临时执行窗口
+Network    ≈ 浏览器抓包工具，类似看 HTTP 请求日志、Postman、网关日志
+```
+
+前端排查接口问题的优先路径：
+
+```text
+1. Console 看是否有 JS 报错。
+2. Network 看请求是否发出。
+3. 检查 URL、method、状态码、请求参数、请求体。
+4. 查看 Response，确认后端实际返回。
+5. 再回到代码检查 fetch、response.ok、response.json 和 catch。
+```
+
+### 6.2 fetch 与 Spring Boot 对应关系
+
+前端 API 函数与 Spring Boot Controller 可以建立直接映射：
+
+```text
+fetchUsers()          GET /api/users            @GetMapping
+createUser(payload)   POST /api/users           @PostMapping + @RequestBody
+updateUser(id, data)  PUT /api/users/{id}       @PutMapping + @PathVariable + @RequestBody
+deleteUserApi(id)     DELETE /api/users/{id}    @DeleteMapping + @PathVariable
+```
+
+关键转换：
+
+```text
+JS 对象             -> JSON.stringify(payload) -> HTTP request body
+HTTP request body   -> @RequestBody            -> Java Request DTO
+Java Response VO    -> JSON                    -> response.json()
+```
+
+### 6.3 CORS 与代理
+
+CORS 是浏览器安全策略，不是 JavaScript 语法错误。
+
+```text
+http://localhost:8000  请求  http://localhost:8080
+```
+
+端口不同也属于跨域。Postman 能请求成功，不代表浏览器一定能请求成功。
+
+后续进入 Vite 阶段时，应引入开发代理：
+
+```js
+server: {
+  proxy: {
+    '/api': 'http://localhost:8080'
+  }
+}
+```
+
+## 7. 后续重点发现问题
+
+当前剩余重点：
+
+- 第一阶段需要做正式验收复盘，沉淀 HTML/CSS/JS/DOM/fetch/安全渲染的阶段结论。
 - 进入 React 前，应明确传统 DOM 的痛点：手动 DOM 更新、状态分散、事件绑定复杂。
+- 第二阶段应尽快把当前原生 JS 心智模型迁移到 TypeScript + 工程化项目结构中。

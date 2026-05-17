@@ -908,49 +908,798 @@ loadButton.addEventListener(...)
 
 ```text
 HTML：页面结构、表单、表格、按钮、输入框、下拉框
-CSS：Flex、Grid、卡片、表格、按钮、状态样式
-JavaScript：变量、函数、数组、对象、事件、DOM、Promise、async/await
-浏览器：DOM、事件、渲染、预览验证
+CSS：Flex、Grid、盒模型、定位、响应式、卡片、表格、按钮、状态样式
+JavaScript：变量、函数、数组、对象、事件、DOM、Promise、async/await、fetch
+浏览器：DOM、事件、渲染、DevTools、Network 预览验证
 安全：XSS 风险、escapeHtml、textContent
 业务：查询、新增、编辑、删除、启用/禁用
 状态：loading、empty、error、success、editingUserId
+联调认知：response.ok、HTTP 状态码、users.json、本地静态资源请求、Spring Boot REST API 对应关系
 ```
 
-待补齐：
+当前结论：第一阶段计划内容已覆盖完成，已进入验收复盘后状态。
+
+## 20. 第一阶段阶段性总结
+
+当前这一轮原生 HTML / CSS / JavaScript 练习，已经把一个最小用户管理后台需要的核心知识串起来了：
 
 ```text
-CSS 盒模型、定位、响应式
-DevTools Elements / Console / Network 系统练习
-真实 fetch 请求与 users.json / Spring Boot API 联调
-第一阶段验收复盘
+页面结构 -> CSS 布局 -> DOM 操作 -> 事件处理 -> 异步请求 -> 状态管理 -> 安全渲染
 ```
 
-## 20. 下一步学习建议
-
-建议下一步进入浏览器开发者工具练习：
+这意味着你已经不再只是“会写一个静态页面”，而是已经开始具备：
 
 ```text
-Elements：查看 DOM 结构和 CSS 样式
-Console：执行 JS、查看变量和错误
-Network：观察真实 fetch 请求、状态码和响应 JSON
+看懂一个基础管理页
+修改一个基础管理页
+排查一个基础接口请求问题
+理解为什么页面会随着数据变化而更新
 ```
 
-为了练习 Network，可以创建 `users.json`，然后将“加载用户”改成真正的：
+接下来的重点不再是继续堆原生 JS 功能，而是进入第二阶段，把这些能力迁移到 TypeScript 和工程化项目结构中。
+
+## 21. 真实 fetch 请求与 users.json
+
+## 21. 真实 fetch 请求与 users.json
+
+此前 `fetchUsers` 是用 `Promise + setTimeout` 模拟接口延迟：
 
 ```js
-const response = await fetch('/users.json');
-const users = await response.json();
+function fetchUsers() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(users);
+    }, 800);
+  });
+}
 ```
 
-这样就能把以下知识串起来：
+现在改成真正的浏览器网络请求：
+
+```js
+async function fetchUsers({ keyword = '', shouldFail = false } = {}) {
+  const url = shouldFail ? '/missing-users.json' : '/users.json';
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`请求失败，状态码：${response.status}`);
+  }
+
+  const remoteUsers = await response.json();
+
+  if (users.length === 0) {
+    users = remoteUsers;
+  }
+
+  return keyword
+    ? users.filter(user => user.name.includes(keyword))
+    : users;
+}
+```
+
+### 21.1 users.json
+
+`users.json` 可以先理解成“假的后端接口返回值”：
+
+```json
+[
+  {
+    "id": 1,
+    "name": "张三",
+    "role": "管理员",
+    "status": "enabled"
+  }
+]
+```
+
+浏览器请求流程：
 
 ```text
-fetch
-HTTP 状态码
-JSON 响应
-response.json()
-Network 面板
-Spring Boot API 联调基础
+点击加载用户
+  -> 调用 fetchUsers()
+  -> fetch('/users.json')
+  -> 浏览器发起 HTTP 请求
+  -> 本地静态服务器返回 JSON 文件
+  -> response.json() 把 JSON 文本转成 JS 数组
+  -> renderUsers(userList) 渲染表格
+```
+
+### 21.2 response.ok 和状态码
+
+```js
+if (!response.ok) {
+  throw new Error(`请求失败，状态码：${response.status}`);
+}
+```
+
+含义：
+
+```text
+response.ok === true   状态码在 200-299 范围内
+response.ok === false  例如 404、500 等错误状态码
+```
+
+常见状态码：
+
+```text
+200 OK                  请求成功
+404 Not Found           资源不存在
+500 Internal Server Error 服务器内部错误
+```
+
+当前“模拟失败”按钮会请求：
+
+```js
+/missing-users.json
+```
+
+因为这个文件不存在，所以 Network 面板里可以看到 404，请求会进入 `catch`，页面显示“加载失败，请稍后重试”。
+
+### 21.3 和 Spring Boot Controller 的对应关系
+
+当前本地 JSON：
+
+```js
+fetch('/users.json')
+```
+
+后续接 Spring Boot 时会变成：
+
+```js
+fetch('/api/users')
+```
+
+后端可能是：
+
+```java
+@GetMapping("/api/users")
+public List<UserVO> listUsers() {
+    return userService.listUsers();
+}
+```
+
+对应关系：
+
+```text
+前端 fetch('/api/users')
+        ↓
+HTTP GET /api/users
+        ↓
+Spring Boot @GetMapping("/api/users")
+        ↓
+返回 JSON
+        ↓
+前端 response.json()
+        ↓
+渲染页面
+```
+
+### 21.4 Network 面板观察点
+
+打开浏览器 DevTools 的 Network 面板后，点击“加载用户”，重点看：
+
+```text
+Name：users.json
+Status：200
+Type：fetch / json
+Response：返回的用户 JSON 数组
+```
+
+点击“模拟失败”，重点看：
+
+```text
+Name：missing-users.json
+Status：404
+Response：文件不存在相关响应
+```
+
+这一步的目标不是写复杂代码，而是建立一个核心认知：
+
+```text
+fetch 不是魔法，它就是浏览器帮你发 HTTP 请求。
+```
+
+## 22. 浏览器 DevTools 实操
+
+DevTools 可以理解成浏览器里的“调试器 + 日志系统 + 网络抓包工具”。
+
+对 Java 后端开发者来说，可以这样类比：
+
+```text
+Elements   ≈ 查看运行时页面结构，类似看对象当前状态
+Console    ≈ 浏览器里的日志和 REPL，类似 Java 控制台 + JS 临时执行窗口
+Network    ≈ 浏览器抓包工具，类似看 HTTP 请求日志、Postman、网关日志
+```
+
+### 22.1 Elements 面板
+
+Elements 用来看页面最终生成出来的 DOM 和 CSS。
+
+当前页面可以重点观察：
+
+```text
+<body>
+  <div class="layout">
+    <aside class="sidebar">...</aside>
+    <main class="content">...</main>
+  </div>
+</body>
+```
+
+要看的内容：
+
+```text
+DOM 树：浏览器最终解析出来的 HTML 结构
+Styles：当前元素命中了哪些 CSS 规则
+Computed：最终计算出来的样式
+Box Model：margin / border / padding / content
+```
+
+盒模型可以记成：
+
+```text
+margin   外边距：元素和外部其他元素之间的距离
+border   边框
+padding  内边距：内容和边框之间的距离
+content  内容区域
+```
+
+后台页面里最常见的调试问题：
+
+```text
+为什么元素没有对齐？      看 display / flex / gap / width
+为什么间距不对？          看 margin / padding
+为什么样式没生效？        看选择器是否命中、是否被覆盖
+为什么按钮位置奇怪？      看父元素布局和盒模型
+```
+
+### 22.2 Console 面板
+
+Console 有两个用途：
+
+```text
+1. 查看 JS 报错和 console.log 日志
+2. 临时执行 JS 表达式
+```
+
+例如在当前页面可以执行：
+
+```js
+document.querySelector('#userTableBody')
+```
+
+含义：查看表格 body 元素。
+
+也可以执行：
+
+```js
+document.querySelectorAll('tbody tr').length
+```
+
+含义：查看当前表格有几行。
+
+如果点击“加载用户”后表格没有显示，可以用 Console 判断：
+
+```text
+是否有红色报错？
+fetchUsers 有没有执行？
+DOM 元素选择器是否写错？
+数据是不是数组？
+```
+
+### 22.3 Network 面板
+
+Network 是前后端联调最重要的面板。
+
+当前页面有两个典型请求：
+
+```text
+GET /users.json              成功，状态码 200
+GET /missing-users.json      失败，状态码 404
+```
+
+点击某条请求后，重点看：
+
+```text
+Headers：请求 URL、请求方法、状态码、响应头
+Preview：浏览器帮你格式化后的响应内容
+Response：原始响应内容
+Timing：请求耗时
+```
+
+对于真实接口，Network 面板可以回答这些问题：
+
+```text
+请求到底有没有发出去？
+请求 URL 对不对？
+HTTP method 对不对？
+状态码是多少？
+请求参数有没有带上？
+请求体 JSON 对不对？
+后端返回了什么？
+是前端解析错了，还是后端返回错了？
+```
+
+### 22.4 一个真实排查流程
+
+如果页面显示“加载失败，请稍后重试”，不要先猜代码，按顺序排查：
+
+```text
+1. 打开 Console，看有没有红色 JS 报错。
+2. 打开 Network，看请求是否发出。
+3. 看请求 URL 是否正确。
+4. 看状态码：200 / 404 / 500 / CORS error。
+5. 看 Response，确认后端到底返回了什么。
+6. 回到代码里检查 fetch、response.ok、response.json 和 catch。
+```
+
+这就是前端排查接口问题的基本路径。
+
+## 23. Spring Boot REST API 对接方式
+
+当前我们请求的是本地静态文件：
+
+```js
+fetch('/users.json')
+```
+
+后续对接 Spring Boot 时，通常会变成请求后端接口：
+
+```js
+fetch('/api/users')
+```
+
+或者：
+
+```js
+fetch('http://localhost:8080/api/users')
+```
+
+### 23.1 GET：查询列表
+
+前端：
+
+```js
+async function fetchUsers() {
+  const response = await fetch('/api/users');
+
+  if (!response.ok) {
+    throw new Error(`请求失败，状态码：${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+后端：
+
+```java
+@GetMapping("/api/users")
+public List<UserVO> listUsers() {
+    return userService.listUsers();
+}
+```
+
+对应关系：
+
+```text
+fetch('/api/users')
+  -> GET /api/users
+  -> @GetMapping("/api/users")
+  -> 返回 List<UserVO>
+  -> 浏览器收到 JSON 数组
+```
+
+### 23.2 POST：新增用户
+
+前端：
+
+```js
+async function createUser(payload) {
+  const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`请求失败，状态码：${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+调用时：
+
+```js
+createUser({
+  name: '赵六',
+  role: '运营',
+  status: 'enabled'
+});
+```
+
+后端：
+
+```java
+@PostMapping("/api/users")
+public UserVO createUser(@RequestBody CreateUserRequest request) {
+    return userService.createUser(request);
+}
+```
+
+关键点：
+
+```text
+headers['Content-Type'] = 'application/json'  告诉后端请求体是 JSON
+JSON.stringify(payload)                       把 JS 对象转成 JSON 字符串
+@RequestBody                                  Spring Boot 从请求体解析 JSON
+```
+
+### 23.3 PUT：编辑用户
+
+前端：
+
+```js
+async function updateUser(id, payload) {
+  const response = await fetch(`/api/users/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`请求失败，状态码：${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+后端：
+
+```java
+@PutMapping("/api/users/{id}")
+public UserVO updateUser(
+        @PathVariable Long id,
+        @RequestBody UpdateUserRequest request) {
+    return userService.updateUser(id, request);
+}
+```
+
+对应关系：
+
+```text
+/api/users/1              -> @PathVariable Long id
+JSON body                 -> @RequestBody UpdateUserRequest request
+```
+
+### 23.4 DELETE：删除用户
+
+前端：
+
+```js
+async function deleteUserApi(id) {
+  const response = await fetch(`/api/users/${id}`, {
+    method: 'DELETE'
+  });
+
+  if (!response.ok) {
+    throw new Error(`请求失败，状态码：${response.status}`);
+  }
+}
+```
+
+后端：
+
+```java
+@DeleteMapping("/api/users/{id}")
+public void deleteUser(@PathVariable Long id) {
+    userService.deleteUser(id);
+}
+```
+
+### 23.5 前端 API 函数和后端 Controller 的映射
+
+```text
+前端函数              HTTP 请求                 Spring Boot
+fetchUsers()          GET /api/users            @GetMapping
+createUser(payload)   POST /api/users           @PostMapping + @RequestBody
+updateUser(id, data)  PUT /api/users/{id}       @PutMapping + @PathVariable + @RequestBody
+deleteUserApi(id)     DELETE /api/users/{id}    @DeleteMapping + @PathVariable
+```
+
+### 23.6 CORS 是什么
+
+如果前端页面地址是：
+
+```text
+http://localhost:8000
+```
+
+后端接口地址是：
+
+```text
+http://localhost:8080
+```
+
+它们协议、域名或端口不同，就属于跨域：
+
+```text
+localhost:8000  ->  localhost:8080
+```
+
+浏览器会检查后端是否允许这个来源访问。
+
+如果后端没允许，前端 Console 里会看到 CORS 报错。
+
+注意：
+
+```text
+CORS 是浏览器安全策略，不是 JavaScript 语法错误。
+Postman 能请求成功，不代表浏览器就一定能请求成功。
+```
+
+后端临时允许方式可能是：
+
+```java
+@CrossOrigin(origins = "http://localhost:8000")
+```
+
+真实项目更常用统一 CORS 配置或前端开发代理。
+
+### 23.7 本地开发代理
+
+真实前端项目中，常见做法是让前端开发服务器代理后端请求。
+
+前端代码仍然写：
+
+```js
+fetch('/api/users')
+```
+
+Vite 开发服务器把 `/api` 转发到：
+
+```text
+http://localhost:8080
+```
+
+这样浏览器看到的是同源请求，开发体验更好。
+
+后续进入 Vite 阶段会正式配置：
+
+```js
+server: {
+  proxy: {
+    '/api': 'http://localhost:8080'
+  }
+}
+```
+
+## 24. CSS 补强：盒模型、Grid、定位、响应式
+
+这一节不是追求设计感，而是掌握后台页面开发中最常遇到的布局问题。
+
+核心能力：
+
+```text
+盒模型：元素到底占多大、为什么间距不对
+Grid：二维布局，适合表单、卡片区、仪表盘布局
+定位 position：元素如何固定、覆盖、悬浮
+响应式：窗口变窄时页面怎么自适应
+```
+
+### 24.1 盒模型
+
+一个元素从内到外由四层组成：
+
+```text
+content  内容区域
+padding  内边距：内容和边框之间的距离
+border   边框
+margin   外边距：元素和其他元素之间的距离
+```
+
+默认情况下，元素实际占用宽度可能是：
+
+```text
+content width
++ padding-left + padding-right
++ border-left + border-right
++ margin-left + margin-right
+```
+
+现代页面通常会设置：
+
+```css
+* {
+  box-sizing: border-box;
+}
+```
+
+含义：
+
+```text
+width 包含 content + padding + border
+```
+
+这样更符合直觉。例如：
+
+```css
+.card {
+  width: 200px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+```
+
+最终卡片宽度仍然是 `200px`，不会变成 `200 + 16 * 2 + 1 * 2`。
+
+后台页面常见排查：
+
+```text
+表单为什么撑破容器？       看 width + padding + box-sizing
+卡片之间为什么太挤？       看 gap / margin
+按钮文字为什么贴边？       看 padding
+表格为什么看起来拥挤？     看 th / td padding
+```
+
+### 24.2 Flex 与 Grid 的区别
+
+Flex 更适合一维布局：
+
+```text
+横向排列按钮
+横向排列卡片
+左侧菜单 + 右侧内容
+```
+
+Grid 更适合二维布局：
+
+```text
+表单字段两列或多列排列
+仪表盘卡片区
+复杂页面区域划分
+```
+
+当前页面的新增用户表单适合 Grid：
+
+```css
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  gap: 12px;
+}
+```
+
+含义：
+
+```text
+repeat(3, 1fr)   三列，每列平分剩余空间
+auto             最后一列按按钮内容宽度占位
+gap              行列之间的间距
+```
+
+可以把 Grid 理解成二维表格：
+
+```text
+第 1 列：用户名
+第 2 列：角色
+第 3 列：状态
+第 4 列：按钮
+```
+
+常见 Grid 写法：
+
+```css
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+```
+
+表示三列等宽卡片。
+
+### 24.3 position 定位
+
+常见定位值：
+
+```text
+static    默认布局，正常文档流
+relative  相对自己原来的位置偏移
+absolute  相对最近的定位祖先定位
+fixed     相对浏览器窗口固定
+sticky    滚动到某个位置后吸住
+```
+
+后台系统常见用途：
+
+```text
+sticky    顶部栏吸顶
+fixed     固定右下角帮助按钮 / 返回顶部按钮
+absolute  下拉菜单、气泡提示、浮层
+```
+
+例如顶部栏吸顶：
+
+```css
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+```
+
+含义：
+
+```text
+position: sticky  滚动到指定位置后吸住
+top: 0            吸在距离视口顶部 0 的位置
+z-index: 10       层级更高，避免被普通内容盖住
+```
+
+`z-index` 可以理解成图层顺序：
+
+```text
+数字越大，越靠上
+只有在定位元素等特定情况下才明显生效
+```
+
+### 24.4 响应式布局
+
+响应式的目标：窗口变窄时页面不要崩。
+
+核心写法是媒体查询：
+
+```css
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+含义：
+
+```text
+当屏幕宽度 <= 768px 时：
+- 左右布局改成上下布局
+- 表单从多列变成单列
+```
+
+后台系统虽然主要面向 PC，但响应式仍然有价值：
+
+```text
+开发时浏览器窗口可能不是全屏
+用户可能使用小屏笔记本
+管理后台可能在平板上查看
+```
+
+### 24.5 CSS 这一阶段的核心总结
+
+```text
+盒模型：解释元素为什么占这么大
+Flex：解决一维排列
+Grid：解决二维排列
+position：解决脱离普通流的特殊位置
+响应式：解决不同屏幕宽度下的布局变化
+```
+
+第一阶段不要求记住所有 CSS 属性，但要能做到：
+
+```text
+看到布局问题时，知道应该去 DevTools 里看盒模型、display、grid/flex、position 和媒体查询。
 ```
 
 ## 21. 当前学习进度复盘

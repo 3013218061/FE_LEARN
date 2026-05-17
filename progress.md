@@ -13,6 +13,7 @@
 - `frontend-learning-plan.md`：原始系统学习计划。
 - `index.html`：第一周 Web 基础后台管理页面练习。
 - `week-01-web-basics-notes.md`：第一周 Web 基础学习笔记。
+- `week-02-typescript-engineering-notes.md`：第二阶段 TypeScript 与工程化学习笔记。
 - `task_plan.md`：阶段计划、任务进度和决策记录。
 - `findings.md`：研究发现、课程要点和技术心智模型。
 - `progress.md`：会话日志与后续行动。
@@ -171,7 +172,8 @@ e14a141 add week one web basics exercise
 
 ### 5. 当前进度概览
 
-第一阶段 Web 基础：进行中，CRUD 主线已经完成，正在进入第一阶段收尾。
+第一阶段 Web 基础：已完成正式验收复盘并通过。
+第二阶段 TypeScript 与工程化：已完成 TypeScript 基础类型、`interface` / `type` / 联合类型、函数签名、`Promise<T>`、泛型、npm / `package.json` / `scripts`、Vite 工程化结构，以及 React 过渡阶段的组件、`props`、`state`、`useState`、受控组件、`useEffect`、JSX、条件渲染、列表渲染与数据流基础，并已沉淀到第二阶段笔记。
 
 已具备的页面能力：
 
@@ -181,48 +183,76 @@ e14a141 add week one web basics exercise
 - 新增。
 - 编辑。
 - 删除。
-- 启用 / 禁用状态切换。
-- 模拟接口请求。
+- 启用 / 禁用。
+- 真实 `fetch('/users.json')` 请求。
 - loading / empty / error / success 状态。
 - 表单校验。
-- 新增 / 编辑表单复用。
+- 新增/编辑表单复用。
+- `editingUserId` 编辑状态管理。
 - XSS 防护。
-- 使用 DOM API 安全渲染用户输入和接口数据。
+- 使用 `document.createElement` + `textContent` 安全渲染动态文本。
+- `users.json` 作为本地 JSON 数据源。
+- `response.ok`、HTTP 状态码、`response.json()` 基础认知。
+- CSS 盒模型、Flex / Grid 使用场景、position 定位、响应式布局基础。
+
+已完成的复盘内容：
+
+- 当前页面已经形成最小用户管理 CRUD。
+- 已按职责理解当前单文件代码结构：数据状态层、DOM 引用层、API 模拟层、表单状态层、渲染层、事件处理层。
+- 已在 `week-01-web-basics-notes.md` 中补充 CRUD、编辑状态、启用/禁用和代码分层笔记。
+- 已补充真实 `fetch`、`users.json`、Network 面板观察点和 Spring Boot Controller 对应关系笔记。
+- 已补充 DevTools Elements / Console / Network 用途、接口排查流程。
+- 已补充 Spring Boot REST API 的 GET / POST / PUT / DELETE、JSON body、CORS、本地代理。
+- 已补充 CSS 盒模型、Flex 与 Grid 区别、position 定位、响应式布局。
+
+第二阶段当前已完成：
+
+- TypeScript 为什么存在，以及它主要解决什么问题。
+- TypeScript 基础类型：`string`、`number`、`boolean`、数组、对象。
+- `interface`、`type`、联合类型的基本使用。
+- `UserStatus = 'enabled' | 'disabled'` 这类受限字符串类型的设计思路。
+- 函数参数类型、返回值类型、`Promise<T>` 的基本理解。
+- 泛型，以及 `Array<T>`、`Promise<T>`、`PageResult<T>` 这类常见写法。
+- TypeScript 与 Java DTO / VO / `CompletableFuture` / 泛型集合的初步类比。
+- npm、`package.json`、`dependencies` / `devDependencies`、`scripts` 的基础认知。
+- Vite 作为开发服务器与构建工具的定位。
+- Vite + React + TypeScript 基础项目结构认知。
+- 从当前原生 JS 用户管理页迁移到 React 的拆分顺序与职责映射。
+- React 组件、`props`、`state`、`useState`、受控组件、`useEffect` 的基本理解。
+- JSX、条件渲染、列表渲染、`key` 与 `App -> props -> 子组件 -> 回调 -> state 更新` 数据流模型。
+- 已更新 `week-02-typescript-engineering-notes.md` 记录第二阶段已讲内容。
 
 仍需补齐：
 
-- 浏览器 DevTools 系统练习。
-- 创建 `users.json` 并改造真实 `fetch` 请求。
-- Network 面板观察请求、状态码和 JSON 响应。
-- CSS 盒模型、定位、响应式。
-- 第一阶段验收复盘。
+- 创建真正的 Vite + React + TypeScript 项目。
+- 在工程化项目里落地当前 `User`、请求参数、API 返回类型设计。
+- 封装基础 API 请求方法并重写当前用户管理页面。
 
 ### 6. 下一步建议
 
 建议下一次继续按以下顺序推进：
 
-1. 开始浏览器开发者工具练习。
-   - Elements：查看 DOM 层级、CSS 样式来源、盒模型。
-   - Console：执行 JS、查看变量、观察报错。
-   - Network：观察请求 URL、状态码、响应头、响应体。
+1. 创建 Vite + React + TypeScript 项目骨架。
+2. 落地 `User`、`CreateUserRequest`、`UpdateUserRequest` 等类型。
+3. 封装 `fetchUsers`、`createUser`、`updateUser`、`deleteUserApi`。
+4. 用 `App.tsx`、`UserForm`、`UserTable` 重写当前用户管理页面。
 
-2. 创建 `users.json` 并改造加载逻辑。
-   - 将当前 `fetchUsers` 从 `setTimeout` 模拟改成真实 `fetch('/users.json')`。
-   - 用 Network 面板观察 JSON 文件请求。
-   - 讲清楚 `response.ok`、`response.json()` 和 HTTP 状态码。
+### 7. 本次验证结果
 
-3. 补齐 CSS 基础细节。
-   - 盒模型：content、padding、border、margin。
-   - 定位：static、relative、absolute、fixed、sticky。
-   - 响应式：媒体查询、窄屏布局调整。
+本次已通过本地静态服务器预览验证：
 
-4. 做第一阶段验收复盘。
-   - 能否独立写出后台页面结构。
-   - 能否解释数据如何渲染成表格。
-   - 能否解释一次点击事件如何改变 UI。
-   - 能否说明传统 DOM 写法和后续 React 状态驱动模型的关系。
+```text
+GET /users.json              200 OK
+GET /missing-users.json      404 File not found
+```
 
-### 7. 风险与注意事项
+页面表现：
+
+- 点击“加载用户”后，表格能正确渲染 `users.json` 中的 4 条用户数据。
+- XSS 测试数据仍作为普通文本显示，没有生成真实 `<img>` 或 `<button>` 节点。
+- 点击“模拟失败”后，Network 面板出现 404 请求，页面进入错误状态并显示“加载失败，请稍后重试”。
+
+### 8. 风险与注意事项
 
 - 当前 `index.html` 仍是教学用单文件结构，后续功能继续增加会变得臃肿，应在进入 TypeScript/Vite 阶段拆分文件。
 - 当前模拟数据中包含 XSS 测试数据，教学时有价值；如果作为正式 demo 展示，需要说明其用途。

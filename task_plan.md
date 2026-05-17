@@ -43,14 +43,15 @@ HTML/CSS/JavaScript
 
 - `index.html`：后台管理首页练习页面。
 - `week-01-web-basics-notes.md`：第一周 Web 基础学习笔记。
+- `week-02-typescript-engineering-notes.md`：第二阶段 TypeScript 与工程化学习笔记。
 
-当前完成情况：进行中，第一阶段 CRUD 主线已经完成，下一步进入 DevTools、真实 fetch 与 CSS 细节补齐。
+当前完成情况：已完成第一阶段学习内容与正式验收复盘，已进入第二阶段 TypeScript 与工程化。
 
 已完成任务：
 
 - [x] 搭建后台首页基础结构：左侧菜单、顶部导航、数据卡片、查询区域、数据表格。
 - [x] 使用 CSS Flex 完成左右布局、卡片横向排列、表单与表格样式。
-- [x] 使用 CSS Grid 完成新增/编辑用户表单的基础布局。
+- [x] 讲解 CSS 盒模型、Grid、定位、响应式基础。
 - [x] 使用 JavaScript `querySelector` 获取页面元素。
 - [x] 使用 `addEventListener` 绑定按钮点击事件。
 - [x] 使用数组数据渲染用户表格。
@@ -58,22 +59,23 @@ HTML/CSS/JavaScript
 - [x] 使用 `async/await` 和 `try/catch` 处理异步请求。
 - [x] 处理 loading、empty、error 三种状态。
 - [x] 将模拟请求函数调整为更接近真实 API 层的 `fetchUsers({ keyword, shouldFail })`。
+- [x] 创建 `users.json`，将“加载用户”改成真实 `fetch('/users.json')` 请求。
+- [x] 讲解 `response.ok`、HTTP 状态码、`response.json()` 和 Network 面板观察点。
+- [x] 讲解真实 `fetch` 与 Spring Boot Controller 的基本对应关系。
+- [x] 讲解 DevTools Elements、Console、Network 的用途和接口问题排查流程。
+- [x] 补充 Spring Boot API 联调中的 GET / POST / PUT / DELETE、JSON body、CORS、本地代理。
 - [x] 讲解并实践 XSS 风险与 `innerHTML` 的安全问题。
 - [x] 使用 `escapeHtml` 进行 HTML 转义。
 - [x] 使用 `document.createElement` + `textContent` 重构表格渲染。
 - [x] 增加“新增用户”表单，完成基础校验、追加数据、重新渲染。
+- [x] 增加“编辑用户”功能，理解 `editingUserId` 与新增/编辑表单复用。
 - [x] 增加“删除用户”功能，完成确认、数组删除、重新渲染。
-- [x] 增加“编辑用户”功能，理解新增与编辑表单复用。
-- [x] 增加“启用/禁用用户”功能，理解状态切换。
-- [x] 初步复盘当前单文件代码分层：数据状态层、DOM 引用层、API 模拟层、表单状态层、渲染层、事件处理层。
+- [x] 增加“启用/禁用用户”功能，理解状态切换与重新渲染。
+- [x] 对当前单文件页面做代码职责分层复盘：数据状态层、DOM 引用层、API 模拟层、表单状态层、渲染层、事件处理层。
 
 待完成任务：
 
-- [ ] 系统讲解浏览器开发者工具：Elements、Console、Network。
-- [ ] 创建 `users.json` 并将模拟请求改成真实 `fetch`，练习 Network 面板。
-- [ ] 讲解真实 `fetch` 请求与 Spring Boot API 对接方式。
-- [ ] 讲解 CSS 盒模型、定位、响应式基础。
-- [ ] 对第一阶段进行验收复盘。
+- [x] 对第一阶段进行正式验收复盘，并输出阶段结论。
 
 ### 第二阶段：TypeScript 与工程化
 
@@ -81,10 +83,13 @@ HTML/CSS/JavaScript
 
 计划任务：
 
-- [ ] 学习 TypeScript 基础类型：string、number、boolean、数组、对象。
-- [ ] 学习 interface、type、联合类型、泛型。
-- [ ] 对比 TypeScript interface 与 Java DTO。
-- [ ] 学习 npm、package.json、依赖版本、脚本命令。
+- [x] 学习 TypeScript 基础类型：string、number、boolean、数组、对象。
+- [x] 学习 interface、type、联合类型。
+- [x] 对比 TypeScript interface 与 Java DTO。
+- [x] 学习函数参数类型、返回值类型、`Promise<T>`。
+- [x] 学习泛型。
+- [x] 学习 npm、package.json、依赖版本、脚本命令。
+- [x] 整理第二阶段 TypeScript 与工程化学习笔记。
 - [ ] 创建 Vite + React + TypeScript 项目。
 - [ ] 定义 `UserVO`、`CreateUserRequest`、`UpdateUserRequest` 等接口类型。
 - [ ] 封装基础 API 请求方法。
@@ -149,17 +154,14 @@ UI = f(state)
 
 - 当前先使用原生 HTML/CSS/JavaScript 打基础，不急于进入 React。
 - 当前练习以后台管理页面为主，便于与 Java 后端业务场景连接。
-- 当前使用本地数组和模拟 Promise 代替真实后端接口，后续再切换到 `fetch` + Spring Boot API。
+- 当前已从本地数组和模拟 Promise 过渡到 `fetch('/users.json')`，后续再切换到真实 Spring Boot API。
 - 对动态文本渲染，优先使用 `textContent`；如必须使用 `innerHTML`，需要转义或清洗。
 - 删除等危险操作需要确认。
 - 真实 React 阶段会优先采用不可变数据更新方式，如 `filter` 生成新数组。
 
 ## 5. 下一步建议
 
-CRUD 主线已经完成，优先进入第一阶段收尾能力：
+优先完成第一阶段收尾，并为第二阶段 TypeScript / React 做准备：
 
-1. 使用浏览器 DevTools 检查 DOM、CSS、Console 日志和 Network 请求。
-2. 创建 `users.json`，把当前 `fetchUsers` 从 `setTimeout` 模拟改成真实 `fetch('/users.json')`。
-3. 观察 Network 面板中的请求 URL、状态码、响应头和 JSON 响应体。
-4. 补齐 CSS 盒模型、定位、响应式布局基础。
-5. 对第一阶段做验收复盘，总结进入 TypeScript / Vite / React 前必须掌握的知识点。
+1. 对第一阶段 Web 基础做验收复盘。
+2. 进入第二阶段：TypeScript 与工程化。
