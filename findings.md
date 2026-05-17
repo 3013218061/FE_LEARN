@@ -332,10 +332,19 @@ server: {
 }
 ```
 
-## 7. 后续重点发现问题
+## 7. 第二阶段初始发现：TypeScript 入门
+
+当前已经确认的 TypeScript 核心认识：
+
+- TypeScript 的主要价值是补充编译期约束和更清晰的类型信息。
+- 对 Java 后端开发者来说，可以把它理解成把前端代码重新拉回到“有 DTO、有字段约束、有方法签名”的风格。
+- `interface` 适合描述对象结构，例如 `User`、`FetchUsersParams`。
+- `type` 适合给基础类型、联合类型、受限字符串集合起别名。
+- 联合类型适合描述固定取值集合，例如 `type UserStatus = 'enabled' | 'disabled'`。
+- 相比直接写 `status: string`，受限字符串联合类型更能表达真实业务约束。
 
 当前剩余重点：
 
-- 第一阶段需要做正式验收复盘，沉淀 HTML/CSS/JS/DOM/fetch/安全渲染的阶段结论。
+- 继续补齐函数参数类型、返回值类型、`Promise<T>` 与泛型。
 - 进入 React 前，应明确传统 DOM 的痛点：手动 DOM 更新、状态分散、事件绑定复杂。
-- 第二阶段应尽快把当前原生 JS 心智模型迁移到 TypeScript + 工程化项目结构中。
+- 第二阶段应继续把当前原生 JS 心智模型迁移到 TypeScript + 工程化项目结构中。

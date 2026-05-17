@@ -917,7 +917,7 @@ JavaScript：变量、函数、数组、对象、事件、DOM、Promise、async/
 联调认知：response.ok、HTTP 状态码、users.json、本地静态资源请求、Spring Boot REST API 对应关系
 ```
 
-当前结论：第一阶段计划内容已覆盖完成，已进入验收复盘后状态。
+当前结论：第一阶段计划内容已覆盖完成，且已完成正式验收复盘，可以进入第二阶段 TypeScript 与工程化。
 
 ## 20. 第一阶段阶段性总结
 
@@ -938,9 +938,33 @@ JavaScript：变量、函数、数组、对象、事件、DOM、Promise、async/
 
 接下来的重点不再是继续堆原生 JS 功能，而是进入第二阶段，把这些能力迁移到 TypeScript 和工程化项目结构中。
 
-## 21. 真实 fetch 请求与 users.json
+## 21. 第一阶段正式验收结论
 
-## 21. 真实 fetch 请求与 users.json
+第一阶段正式验收后，可以确认当前已经具备以下核心能力：
+
+```text
+能区分 HTML / CSS / JavaScript 的职责
+能理解 DOM 与 querySelector 的作用
+能说清楚点击按钮 -> fetch -> 数据 -> renderUsers -> 页面更新 的基本链路
+能理解 loading / empty / error / success 的页面状态意义
+能理解 textContent 与 innerHTML 的安全差异，以及 XSS 风险
+能按数据状态层、DOM 引用层、渲染层、事件处理层理解当前单文件页面结构
+```
+
+当前验收结论：
+
+```text
+第一阶段通过，可以进入第二阶段 TypeScript 与工程化。
+```
+
+需要继续加强的点：
+
+```text
+把“接口请求到页面更新”的完整链路说得更完整
+更准确地区分原生 DOM 编程和 React 状态驱动渲染
+```
+
+## 22. 真实 fetch 请求与 users.json
 
 此前 `fetchUsers` 是用 `Promise + setTimeout` 模拟接口延迟：
 
@@ -1099,7 +1123,7 @@ Response：文件不存在相关响应
 fetch 不是魔法，它就是浏览器帮你发 HTTP 请求。
 ```
 
-## 22. 浏览器 DevTools 实操
+## 23. 浏览器 DevTools 实操
 
 DevTools 可以理解成浏览器里的“调试器 + 日志系统 + 网络抓包工具”。
 
@@ -1235,7 +1259,7 @@ HTTP method 对不对？
 
 这就是前端排查接口问题的基本路径。
 
-## 23. Spring Boot REST API 对接方式
+## 24. Spring Boot REST API 对接方式
 
 当前我们请求的是本地静态文件：
 
@@ -1481,7 +1505,7 @@ server: {
 }
 ```
 
-## 24. CSS 补强：盒模型、Grid、定位、响应式
+## 25. CSS 补强：盒模型、Grid、定位、响应式
 
 这一节不是追求设计感，而是掌握后台页面开发中最常遇到的布局问题。
 
