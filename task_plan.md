@@ -90,9 +90,9 @@ HTML/CSS/JavaScript
 - [x] 学习泛型。
 - [x] 学习 npm、package.json、依赖版本、脚本命令。
 - [x] 整理第二阶段 TypeScript 与工程化学习笔记。
-- [ ] 创建 Vite + React + TypeScript 项目。
-- [ ] 定义 `UserVO`、`CreateUserRequest`、`UpdateUserRequest` 等接口类型。
-- [ ] 封装基础 API 请求方法。
+- [x] 创建 Vite + React + TypeScript 项目（`user-management/`）。
+- [x] 定义 `User`、`CreateUserRequest`、`UpdateUserRequest` 等接口类型（`src/types/user.ts`）。
+- [x] 封装基础 API 请求方法（`src/api/users.ts`）。
 - [ ] 理解环境变量与不同环境配置。
 
 预期产出：
@@ -113,15 +113,15 @@ UI = f(state)
 
 计划任务：
 
-- [ ] 学习 JSX 与函数组件。
-- [ ] 学习 props 与 state。
-- [ ] 学习 useState、useEffect。
-- [ ] 学习条件渲染、列表渲染。
-- [ ] 学习表单受控组件。
-- [ ] 学习父子组件通信。
-- [ ] 在 React 中重写当前 `index.html` 用户管理页面。
-- [ ] 补齐 loading、empty、error 状态。
-- [ ] 补齐新增、编辑、删除、启用/禁用功能。
+- [x] 学习 JSX 与函数组件。
+- [x] 学习 props 与 state。
+- [x] 学习 useState、useEffect。
+- [x] 学习条件渲染、列表渲染。
+- [x] 学习表单受控组件。
+- [x] 学习父子组件通信。
+- [x] 在 React 中重写当前 `index.html` 用户管理页面（`user-management/`）。
+- [x] 补齐 loading、empty、error 状态。
+- [x] 补齐新增、编辑、删除、启用/禁用功能。
 
 预期产出：
 
@@ -161,7 +161,9 @@ UI = f(state)
 
 ## 5. 下一步建议
 
-优先完成第一阶段收尾，并为第二阶段 TypeScript / React 做准备：
+第二、三阶段的工程落地已完成（`user-management/` 项目可通过 `npm run build`）。下一步：
 
-1. 对第一阶段 Web 基础做验收复盘。
-2. 进入第二阶段：TypeScript 与工程化。
+1. 学习环境变量与多环境配置（`.env` / `import.meta.env`），把 API 基础地址抽成配置。
+2. 进入第四阶段：引入 React Router、API 分层封装、统一错误处理、分页/筛选/排序。
+3. 与真实 Spring Boot REST API 联调，把 `src/api/users.ts` 里的模拟写操作替换为 POST/PUT/DELETE。
+4. 引入 Vitest 做基础单元测试。

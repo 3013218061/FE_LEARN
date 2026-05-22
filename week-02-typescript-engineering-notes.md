@@ -1054,3 +1054,41 @@ React 预备：组件、props、state、useState、受控组件、useEffect、JS
 3. 封装 fetchUsers、createUser、updateUser、deleteUserApi
 4. 用 App.tsx + UserForm + UserTable 重写当前用户管理页面
 ```
+
+## 18. 已落地的工程（user-management/）
+
+上面 1~4 步已在 `user-management/` 目录真正落地，文件与职责对应如下：
+
+```text
+src/types/user.ts          类型定义（第 6 节那组类型）
+src/api/users.ts           API 层：fetchUsers / createUser / updateUser / deleteUserApi
+src/components/UserTable.tsx  列表展示 + onEdit/onDelete/onToggleStatus 回调
+src/components/UserForm.tsx   受控表单，新增/编辑复用（useState + useEffect）
+src/App.tsx                总控层：状态 + API 调用 + 不可变更新 + 四态渲染
+src/main.tsx               入口，createRoot 挂到 #root
+```
+
+可运行命令：
+
+```bash
+cd user-management
+npm install      # 安装依赖
+npm run dev      # 本地开发服务器
+npm run build    # 类型检查 + 生产构建
+npm run preview  # 预览构建产物
+```
+
+关键对照（原生 vs React）：
+
+```text
+原生：改完数据手动 renderUsers(users)
+React：setUsers(...) 后自动重新渲染
+
+原生：splice 直接改数组
+React：map / filter / 展开运算符 生成新数组（不可变更新）
+
+原生：innerHTML 需要手动 escapeHtml 防 XSS
+React：{user.name} 默认转义，天然安全
+```
+
+下一阶段（第四阶段）方向：环境变量与多环境配置、React Router、统一错误处理、分页/筛选/排序、与 Spring Boot 联调、Vitest 测试。

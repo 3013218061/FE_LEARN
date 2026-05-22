@@ -1,0 +1,122 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f5f6f8;
+  color: #222;
+}
+
+.app {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.toolbar input {
+  flex: 1;
+  padding: 6px 10px;
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid #d0d0d5;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f0f0f3;
+}
+
+.user-form {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.user-form h3 {
+  margin-top: 0;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.form-row label {
+  width: 60px;
+}
+
+.form-row input,
+.form-row select {
+  padding: 6px 10px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.form-error {
+  color: #d23f31;
+  margin: 4px 0;
+}
+
+.message {
+  color: #1a7f37;
+}
+
+.status-text {
+  color: #666;
+}
+
+.status-text.error {
+  color: #d23f31;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.user-table th,
+.user-table td {
+  border: 1px solid #e5e5ea;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.user-table td button {
+  margin-right: 6px;
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.status-enabled {
+  background: #e6f4ea;
+  color: #1a7f37;
+}
+
+.status-disabled {
+  background: #fbeae9;
+  color: #d23f31;
+}

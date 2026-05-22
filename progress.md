@@ -2,6 +2,71 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-05-22 会话记录
+
+### 1. 本次目标
+
+把第二阶段从"理论笔记"推进到"真正动手"：创建 Vite + React + TypeScript 工程，落地类型、封装 API 层，并用 `App.tsx + UserForm + UserTable` 重写用户管理页面。
+
+### 2. 新建的工程
+
+新增目录 `user-management/`，结构如下：
+
+```text
+user-management
+├── package.json          依赖与脚本（dev / build / preview / typecheck）
+├── tsconfig.json         TypeScript 配置
+├── vite.config.ts        Vite + React 插件配置
+├── index.html            挂载点 #root + main.tsx 入口
+├── .gitignore            忽略 node_modules / dist
+├── public
+│   └── users.json        本地数据源（沿用第一阶段，含 XSS 测试数据）
+└── src
+    ├── main.tsx          应用入口，createRoot 挂载
+    ├── App.tsx           总控层：状态 + API 调用 + 数据流分发
+    ├── App.css           页面样式
+    ├── types
+    │   └── user.ts       User / UserStatus / FormMode / 各 Request 类型
+    ├── api
+    │   └── users.ts      fetchUsers / createUser / updateUser / deleteUserApi
+    └── components
+        ├── UserForm.tsx  受控表单，新增/编辑复用
+        └── UserTable.tsx 列表展示 + 操作回调
+```
+
+### 3. 本次讲解与落地内容
+
+- 工程化文件职责：`package.json` 类比 `pom.xml`，`scripts` 是命令别名，`devDependencies` 只在开发/构建期使用。
+- 类型落地：把笔记里设计的 `User`、`UserStatus`、`CreateUserRequest`、`UpdateUserRequest` 真正写进 `src/types/user.ts`。
+- API 分层：所有 `fetch` 收拢到 `src/api/users.ts`，组件不直接碰网络。GET 用真实 `fetch('/users.json')`，写操作先用 `setTimeout` 模拟，接 Spring Boot 后只改 API 层、组件不动。
+- props 数据流：`UserTable` / `UserForm` 通过 props 接收数据与 `onXxx` 回调，"数据往下传、事件往上抛"。
+- 受控组件：`UserForm` 表单值存在 `useState` 里，`useEffect` 监听 `editingUser` 同步编辑初始值。
+- 总控层 `App.tsx`：持有 `users / loading / error / keyword / mode / editingUser / message` 状态，`useEffect` 首次加载，写操作一律用不可变更新（`map` / `filter` / 展开运算符）。
+- 四种状态：loading / error / empty / success 用条件渲染区分。
+- XSS：React 对 `{user.name}` 默认转义，第一阶段的恶意数据在 React 里天然作为纯文本显示。
+
+### 4. 验证结果
+
+```text
+npm install   成功（67 packages）
+npm run build 成功（tsc --noEmit 类型检查通过 + vite build 产物生成）
+npm run preview + curl:
+  GET /                              200，返回挂载点 HTML
+  GET /users.json                    200，返回 4 条用户数据
+  GET /assets/index-*.js             200
+```
+
+说明：本环境无法用真实浏览器点击交互，本次验证覆盖"类型检查 + 生产构建 + 静态服务"，UI 渲染逻辑已通过类型检查。下次可在浏览器里手工点一遍 CRUD。
+
+### 5. 下一步建议
+
+1. 学习环境变量与多环境配置，把 API base URL 抽成 `import.meta.env`。
+2. 进入第四阶段：React Router、统一错误处理、分页/筛选/排序、表单抽象。
+3. 与真实 Spring Boot API 联调，替换 `src/api/users.ts` 的模拟写操作。
+4. 引入 Vitest 写基础单元测试。
+
+---
+
 ## 2026-05-15 会话记录
 
 ### 1. 本次目标
