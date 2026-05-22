@@ -539,12 +539,518 @@ TypeScript 是带类型的 JavaScript
 泛型用于复用逻辑，同时保持类型准确
 ```
 
-## 8. 下一步学习建议
+## 8. npm、package.json 与脚本命令
 
-建议按这个顺序继续第二阶段：
+### 8.1 npm 是什么
+
+先记结论：
 
 ```text
-1. npm、package.json、脚本命令
-2. Vite 和项目工程化结构
-3. 在工程化项目里落地当前这套 User / API 类型定义
+npm = Node.js 生态里的包管理工具。
+```
+
+它主要负责：
+
+```text
+安装依赖
+记录依赖版本
+执行项目脚本
+```
+
+对 Java 后端开发者来说，可以粗略类比成：
+
+```text
+npm + package.json ≈ Maven/Gradle + pom.xml/build.gradle
+```
+
+### 8.2 package.json 是什么
+
+`package.json` 是前端项目的工程配置入口之一，通常会包含：
+
+```json
+{
+  "name": "user-management-demo",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build"
+  },
+  "dependencies": {
+    "react": "..."
+  },
+  "devDependencies": {
+    "typescript": "...",
+    "vite": "..."
+  }
+}
+```
+
+可以先这样理解：
+
+```text
+name             项目名
+version          项目版本
+scripts          可执行命令
+dependencies     运行时依赖
+devDependencies  开发时依赖
+```
+
+### 8.3 dependencies 和 devDependencies
+
+```text
+dependencies     项目运行时真正要用到的包
+devDependencies  只在开发、构建、校验阶段使用的包
+```
+
+例如：
+
+```text
+react、react-dom                通常放 dependencies
+typescript、vite、eslint        通常放 devDependencies
+```
+
+### 8.4 scripts 是什么
+
+`scripts` 可以理解为给常用命令起别名。
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  }
+}
+```
+
+运行方式：
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
+心智模型：
+
+```text
+scripts = 项目常用命令清单
+```
+
+## 9. Vite 与工程化项目结构
+
+### 9.1 Vite 是什么
+
+先记结论：
+
+```text
+Vite = 前端开发服务器 + 构建工具。
+```
+
+它主要解决：
+
+```text
+本地开发启动
+模块打包构建
+热更新
+静态资源处理
+```
+
+对当前学习路径来说，可以把它理解成：
+
+```text
+原来直接双击 index.html
+->
+现在进入一个真正的前端工程项目
+```
+
+### 9.2 为什么要从单文件进入工程化
+
+当前原生练习页已经能完成 CRUD，但问题也开始明显：
+
+```text
+HTML、CSS、JS 都堆在一个文件里
+类型约束不足
+功能继续增加后会越来越难维护
+难以组件化拆分
+```
+
+所以第二阶段进入工程化，不是为了“更炫”，而是为了：
+
+```text
+拆分文件
+建立类型
+引入组件
+让项目更接近真实工作场景
+```
+
+### 9.3 一个典型的 Vite + React + TypeScript 结构
+
+```text
+src
+├── main.tsx         应用入口
+├── App.tsx          页面主组件
+├── types            类型定义
+├── api              接口请求
+├── components       组件
+└── styles           样式
+```
+
+可以先这样理解职责：
+
+```text
+main.tsx      把 React 应用挂到页面上
+App.tsx       当前页面的总控层
+types         放 User、Request、Response 等类型
+api           放 fetchUsers、createUser 之类接口函数
+components    放 UserForm、UserTable 等组件
+styles        放页面样式
+```
+
+## 10. 从当前原生页面迁移到 React 的拆分思路
+
+### 10.1 不要一次性重写全部
+
+更稳妥的顺序是：
+
+```text
+1. 创建 Vite + React + TypeScript 项目
+2. 先定义类型
+3. 再封装 API 函数
+4. 再写 App.tsx 管理状态
+5. 再拆 UserTable、UserForm
+6. 最后补齐编辑、删除、启用/禁用等交互
+```
+
+这比“一口气全部重写”更容易理解，也更容易排查问题。
+
+### 10.2 当前原生页面里的职责映射
+
+现在的单文件页面里，大致有这些层次：
+
+```text
+users、editingUserId                 状态层
+fetchUsers                           API 层
+renderUsers、renderMessage           渲染层
+新增/编辑/删除/查询按钮事件           事件层
+表单输入读取与校验                    表单层
+```
+
+迁移到 React 后可以变成：
+
+```text
+App.tsx                状态层 + 页面协调层
+api/users.ts           API 层
+UserTable.tsx          表格展示层
+UserForm.tsx           表单层
+```
+
+## 11. React 核心：组件、props、state
+
+### 11.1 组件是什么
+
+先记结论：
+
+```text
+组件 = 可复用的 UI 单元。
+```
+
+例如用户管理页可以拆成：
+
+```text
+App
+├── UserForm
+└── UserTable
+```
+
+### 11.2 props 是什么
+
+`props` 可以理解成：
+
+```text
+父组件传给子组件的数据和回调。
+```
+
+例如：
+
+```ts
+interface UserTableProps {
+  users: User[];
+  onEdit: (user: User) => void;
+  onDelete: (userId: number) => void;
+  onToggleStatus: (user: User) => void;
+}
+```
+
+心智模型：
+
+```text
+props = 组件的入参
+```
+
+它和 Java 方法参数非常像。
+
+### 11.3 state 是什么
+
+`state` 就是组件内部会变化的数据。
+
+例如：
+
+```ts
+const [users, setUsers] = useState<User[]>([]);
+const [loading, setLoading] = useState(false);
+const [keyword, setKeyword] = useState('');
+```
+
+可以理解成：
+
+```text
+users     当前用户列表状态
+loading   当前是否正在请求
+keyword   当前查询条件
+```
+
+React 的核心思想是：
+
+```text
+UI = f(state)
+```
+
+也就是：
+
+```text
+只要 state 变了，界面就跟着重新渲染
+```
+
+## 12. useState、受控组件、useEffect
+
+### 12.1 useState 的核心含义
+
+```ts
+const [users, setUsers] = useState<User[]>([]);
+```
+
+拆开理解：
+
+```text
+users        当前值
+setUsers     修改 users 的函数
+User[]       这个状态里存的是用户数组
+[]           初始值是空数组
+```
+
+与原生 JS 的区别：
+
+```text
+原生 JS：改完数据后要手动 renderUsers(users)
+React：调用 setUsers(...) 后 React 自动重新渲染
+```
+
+### 12.2 受控组件
+
+在 React 里，表单通常写成受控组件：
+
+```ts
+const [name, setName] = useState('');
+
+<input value={name} onChange={event => setName(event.target.value)} />
+```
+
+含义：
+
+```text
+输入框显示什么，取决于 state
+输入框变化时，再反过来更新 state
+```
+
+心智模型：
+
+```text
+表单值不再是“去 DOM 里拿”
+而是“直接存在 React state 里”
+```
+
+### 12.3 useEffect 是什么
+
+常见写法：
+
+```ts
+useEffect(() => {
+  loadUsers();
+}, []);
+```
+
+可以先理解成：
+
+```text
+组件初次渲染完成后，执行一段副作用逻辑
+```
+
+这里的副作用通常是：
+
+```text
+请求接口
+订阅事件
+操作浏览器 API
+```
+
+在当前用户管理页场景里，最典型的用法就是：
+
+```text
+页面打开后自动加载用户列表
+```
+
+## 13. React 里的数据流
+
+在当前教学里，页面主控通常放在 `App.tsx`。
+
+它负责：
+
+```text
+维护 users、loading、keyword、editingUser 等状态
+调用 API
+把数据和回调传给 UserForm、UserTable
+```
+
+可以先建立这样的数据流：
+
+```text
+App 持有状态
+  -> 通过 props 传给子组件
+  -> 子组件触发 onEdit / onDelete / onSubmit
+  -> App 更新 state
+  -> React 重新渲染
+```
+
+这是 React 比原生 DOM 更重要的一个变化：
+
+```text
+不再自己手动拼 DOM
+而是把状态和组件关系先设计清楚
+```
+
+## 14. JSX、条件渲染、列表渲染
+
+### 14.1 JSX 是什么
+
+JSX 可以先理解成：
+
+```text
+在 JavaScript / TypeScript 里写“像 HTML 一样”的 UI 模板。
+```
+
+例如：
+
+```tsx
+return (
+  <table>
+    <tbody>
+      {users.map(user => (
+        <tr key={user.id}>
+          <td>{user.name}</td>
+          <td>{user.role}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+);
+```
+
+它不是字符串拼接，而是：
+
+```text
+根据 state 描述 UI 应该长什么样
+```
+
+### 14.2 条件渲染
+
+例如：
+
+```tsx
+{loading && <p>加载中...</p>}
+{!loading && users.length === 0 && <p>暂无数据</p>}
+```
+
+含义：
+
+```text
+条件成立就显示
+条件不成立就不显示
+```
+
+这和原生 JS 里手动 `if` + 改 DOM 的方式不同。
+
+### 14.3 列表渲染和 key
+
+React 中渲染列表最常见的方式是：
+
+```tsx
+{users.map(user => (
+  <tr key={user.id}>
+    <td>{user.name}</td>
+  </tr>
+))}
+```
+
+其中 `key` 的作用可以先理解成：
+
+```text
+告诉 React：这一行是谁
+方便它正确识别新增、删除、更新
+```
+
+在当前场景里，最自然的 `key` 就是用户 `id`。
+
+## 15. 从原生 renderUsers 到 React 列表渲染的心智迁移
+
+当前原生写法：
+
+```text
+拿到 users
+  -> createElement / appendChild
+  -> 手动插入 tbody
+```
+
+React 写法：
+
+```text
+拿到 users
+  -> users.map(user => JSX)
+  -> React 负责更新真实 DOM
+```
+
+所以迁移时最关键的变化不是语法，而是思维：
+
+```text
+原生 DOM：命令式操作页面
+React：声明式描述页面
+```
+
+## 16. 当前阶段总结
+
+到目前为止，第二阶段已经覆盖的内容可以总结为：
+
+```text
+TypeScript：基础类型、interface、type、联合类型、函数签名、Promise<T>、泛型
+工程化：npm、package.json、scripts、dependencies、devDependencies、Vite、项目结构
+React 预备：组件、props、state、useState、受控组件、useEffect、JSX、条件渲染、列表渲染、key、数据流
+迁移思路：把当前原生用户管理页拆成 React + TypeScript + Vite 项目结构
+```
+
+当前阶段结论：
+
+```text
+已经完成从“原生页面练习”到“React 工程化思维准备”的过渡。
+下一步可以开始真正落地一个 Vite + React + TypeScript 用户管理项目骨架。
+```
+
+## 17. 下一步学习建议
+
+建议按这个顺序继续：
+
+```text
+1. 创建 Vite + React + TypeScript 项目
+2. 落地 User、CreateUserRequest、UpdateUserRequest 等类型
+3. 封装 fetchUsers、createUser、updateUser、deleteUserApi
+4. 用 App.tsx + UserForm + UserTable 重写当前用户管理页面
 ```
