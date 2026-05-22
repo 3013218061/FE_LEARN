@@ -5,17 +5,27 @@ import type {
   UpdateUserRequest,
 } from '../types/user';
 
+// 从环境变量读取后端基础地址。
+// 开发环境拿到 http://localhost:8080/api，生产环境拿到线上地址，
+// 由当前构建模式决定，代码本身不需要任何 if 判断。
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // 模拟网络延迟，方便观察 loading 状态
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // 查询用户列表
-// GET 用真实 fetch('/users.json')，对应将来 Spring Boot 的 GET /api/users
-// keyword 在前端做过滤，真实项目里应作为查询参数传给后端
+// 真实后端就绪后，请求地址应为 `${API_BASE_URL}/users`，
+// 对应 Spring Boot 的 GET /api/users。
+// 当前后端尚未存在，暂时仍从本地 public/users.json 取数据，
+// 用 API_BASE_URL 拼出"将来的真实地址"仅用于演示与日志。
 export async function fetchUsers(
   { keyword = '', shouldFail = false }: FetchUsersParams = {},
 ): Promise<User[]> {
+  const realUrl = `${API_BASE_URL}/users`;
+  console.log('[fetchUsers] 将来要请求的真实地址:', realUrl);
+
   // shouldFail 用来手动触发错误分支，验证 error 状态
   const url = shouldFail ? '/missing-users.json' : '/users.json';
   const response = await fetch(url);
