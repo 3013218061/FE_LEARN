@@ -90,8 +90,8 @@ HTML/CSS/JavaScript
 - [x] 学习泛型。
 - [x] 学习 npm、package.json、依赖版本、脚本命令。
 - [x] 整理第二阶段 TypeScript 与工程化学习笔记。
-- [ ] 创建 Vite + React + TypeScript 项目。
-- [ ] 定义 `UserVO`、`CreateUserRequest`、`UpdateUserRequest` 等接口类型。
+- [x] 创建 Vite + React + TypeScript 项目。
+- [x] 定义 `UserVO`、`CreateUserRequest`、`UpdateUserRequest` 等接口类型。
 - [ ] 封装基础 API 请求方法。
 - [ ] 理解环境变量与不同环境配置。
 

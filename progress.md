@@ -218,26 +218,47 @@ e14a141 add week one web basics exercise
 - Vite 作为开发服务器与构建工具的定位。
 - Vite + React + TypeScript 基础项目结构认知。
 - 从当前原生 JS 用户管理页迁移到 React 的拆分顺序与职责映射。
+- 创建 `user-management` Vite + React + TypeScript 项目骨架。
+- 定义用户管理相关类型：`UserStatus`、`UserVO`、`CreateUserRequest`、`UpdateUserRequest`、`FetchUsersParams`。
+- 完成 `npm install`、`npm run build` 和本地 Vite 服务访问验证。
 - React 组件、`props`、`state`、`useState`、受控组件、`useEffect` 的基本理解。
 - JSX、条件渲染、列表渲染、`key` 与 `App -> props -> 子组件 -> 回调 -> state 更新` 数据流模型。
 - 已更新 `week-02-typescript-engineering-notes.md` 记录第二阶段已讲内容。
 
 仍需补齐：
 
-- 创建真正的 Vite + React + TypeScript 项目。
-- 在工程化项目里落地当前 `User`、请求参数、API 返回类型设计。
 - 封装基础 API 请求方法并重写当前用户管理页面。
 
 ### 6. 下一步建议
 
 建议下一次继续按以下顺序推进：
 
-1. 创建 Vite + React + TypeScript 项目骨架。
-2. 落地 `User`、`CreateUserRequest`、`UpdateUserRequest` 等类型。
-3. 封装 `fetchUsers`、`createUser`、`updateUser`、`deleteUserApi`。
-4. 用 `App.tsx`、`UserForm`、`UserTable` 重写当前用户管理页面。
+1. 封装 `fetchUsers`、`createUser`、`updateUser`、`deleteUserApi`。
+2. 用 `App.tsx`、`UserForm`、`UserTable` 重写当前用户管理页面。
+3. 补齐 loading、empty、error、success message 和表单校验。
+4. 理解环境变量与不同环境配置。
 
-### 7. 本次验证结果
+### 7. 2026-06-09 工程化初始化记录
+
+本次目标：按第二阶段执行计划，初始化工程化 React 项目骨架。
+
+已完成：
+
+- 清理 `user-management` 下只有 `node_modules` 的残留目录状态。
+- 新增根目录 `.gitignore`，忽略 `node_modules/`、`dist/`、日志、系统和 IDE 临时文件。
+- 创建 `user-management/package.json`、`vite.config.ts`、`tsconfig*.json`。
+- 创建 React 入口：`src/main.tsx`、`src/App.tsx`、`src/App.css`。
+- 创建用户类型定义：`src/types/user.ts`。
+- 安装依赖并生成 `package-lock.json`。
+- 运行 `npm run build` 通过。
+- 启动 Vite 开发服务器，并验证 `http://127.0.0.1:5173/` 返回 200。
+
+当前注意事项：
+
+- `user-management` 只完成工程骨架和类型定义，尚未迁移原生 JS 用户管理 CRUD。
+- 当前 Git 工作区已有 `.idea/` 相关 staged 文件，属于本次任务前已有改动，未纳入本次处理。
+
+### 8. 本次验证结果
 
 本次已通过本地静态服务器预览验证：
 
@@ -252,7 +273,7 @@ GET /missing-users.json      404 File not found
 - XSS 测试数据仍作为普通文本显示，没有生成真实 `<img>` 或 `<button>` 节点。
 - 点击“模拟失败”后，Network 面板出现 404 请求，页面进入错误状态并显示“加载失败，请稍后重试”。
 
-### 8. 风险与注意事项
+### 9. 风险与注意事项
 
 - 当前 `index.html` 仍是教学用单文件结构，后续功能继续增加会变得臃肿，应在进入 TypeScript/Vite 阶段拆分文件。
 - 当前模拟数据中包含 XSS 测试数据，教学时有价值；如果作为正式 demo 展示，需要说明其用途。

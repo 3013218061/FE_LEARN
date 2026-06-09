@@ -2,6 +2,63 @@
 
 本笔记对应 `frontend-learning-plan.md` 的第二阶段，目标是在第一阶段原生 HTML / CSS / JavaScript 基础上，建立 TypeScript 类型系统和前端工程化的初步认知。
 
+## 0. 当前工程化产出
+
+已创建 `user-management` Vite + React + TypeScript 项目骨架。
+
+核心文件：
+
+```text
+user-management/
+├── package.json
+├── package-lock.json
+├── index.html
+├── vite.config.ts
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+└── src/
+    ├── main.tsx
+    ├── App.tsx
+    ├── App.css
+    └── types/
+        └── user.ts
+```
+
+已定义用户管理相关类型：
+
+```ts
+type UserStatus = 'enabled' | 'disabled';
+
+interface UserVO {
+  id: number;
+  name: string;
+  role: string;
+  status: UserStatus;
+}
+
+interface CreateUserRequest {
+  name: string;
+  role: string;
+  status: UserStatus;
+}
+
+interface UpdateUserRequest {
+  id: number;
+  name: string;
+  role: string;
+  status: UserStatus;
+}
+```
+
+验证命令：
+
+```bash
+npm install
+npm run build
+npm run dev -- --host 127.0.0.1
+```
+
 ## 1. 为什么前端需要 TypeScript
 
 先记结论：
