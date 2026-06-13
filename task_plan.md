@@ -139,7 +139,7 @@ UI = f(state)
 - [x] 学习 token 鉴权（localStorage 存 token / 登录页 / 请求自动带 Authorization / 路由守卫 RequireAuth / 退出登录，详见 `week-04-3-auth-route-guard-notes.md`）。
 - [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError` + 请求拦截带 token + 响应拦截 401 统一跳登录）。
 - [x] 学习分页、筛选、排序（后端真分页 `PageResult<T>` + `useSearchParams` 把查询条件同步到 URL，详见 `week-04-4-pagination-filter-sort-notes.md`）。
-- [ ] 学习表单抽象。
+- [x] 学习表单抽象（抽出可复用的 `useForm` 自定义 Hook + 独立校验函数，并补 `UserForm` 组件测试，详见 `week-04-6-form-abstraction-component-testing-notes.md`）。
 - [ ] 与 Spring Boot REST API 完成联调。
 - [ ] 学习构建与部署。
 - [x] 引入 Vitest 做基础单元测试（request 层 7 条 + fetchUsers query 拼接 4 条 + token 存储 3 条，共 14 条，详见 `week-04-5-vitest-testing-notes.md`）。

@@ -1,10 +1,6 @@
-import { useState, useEffect } from 'react';
-import type {
-  User,
-  UserStatus,
-  FormMode,
-  CreateUserRequest,
-} from '../types/user';
+import { useEffect } from 'react';
+import type { User, UserStatus, FormMode, CreateUserRequest } from '../types/user';
+import { useForm, type Validator } from '../hooks/useForm';
 
 interface UserFormProps {
   mode: FormMode;
@@ -14,39 +10,53 @@ interface UserFormProps {
   onCancel: () => void;
 }
 
+// 表单内部的值结构（用 type 而非 interface，才满足 useForm 的 Record 约束）
+type UserFormValues = {
+  name: string;
+  role: string;
+  status: UserStatus;
+};
+
+const EMPTY: UserFormValues = { name: '', role: '', status: 'enabled' };
+
+// 校验规则独立成函数：和渲染解耦，复用 / 单测都方便
+const validateUser: Validator<UserFormValues> = (values) => {
+  const errors: Partial<Record<keyof UserFormValues, string>> = {};
+  if (!values.name.trim()) errors.name = '用户名不能为空';
+  if (!values.role.trim()) errors.role = '角色不能为空';
+  return errors;
+};
+
 export function UserForm({
   mode,
   editingUser,
   onSubmit,
   onCancel,
 }: UserFormProps) {
-  // 受控组件：表单值存在 state 里，而不是去 DOM 里取
-  const [name, setName] = useState('');
-  const [role, setRole] = useState('');
-  const [status, setStatus] = useState<UserStatus>('enabled');
-  const [error, setError] = useState('');
+  // 表单状态与校验全部交给 useForm，组件只负责"长什么样、点了怎么办"
+  const { values, errors, setField, reset, submit } = useForm(
+    EMPTY,
+    validateUser,
+  );
 
-  // 当切换到编辑模式（editingUser 变化）时，把表单填充为该用户的值
+  // 切换新增/编辑时，把表单重置为对应初始值
   useEffect(() => {
     if (mode === 'edit' && editingUser) {
-      setName(editingUser.name);
-      setRole(editingUser.role);
-      setStatus(editingUser.status);
+      reset({
+        name: editingUser.name,
+        role: editingUser.role,
+        status: editingUser.status,
+      });
     } else {
-      setName('');
-      setRole('');
-      setStatus('enabled');
+      reset(EMPTY);
     }
-    setError('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, editingUser]);
 
   function handleSubmit() {
-    if (!name.trim() || !role.trim()) {
-      setError('用户名和角色不能为空');
-      return;
-    }
-    setError('');
-    onSubmit({ name: name.trim(), role: role.trim(), status });
+    submit((v) =>
+      onSubmit({ name: v.name.trim(), role: v.role.trim(), status: v.status }),
+    );
   }
 
   return (
@@ -55,30 +65,36 @@ export function UserForm({
       <div className="form-row">
         <label>用户名</label>
         <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
+          value={values.name}
+          onChange={(event) => setField('name', event.target.value)}
           placeholder="请输入用户名"
         />
       </div>
+      {errors.name && <p className="form-error">{errors.name}</p>}
+
       <div className="form-row">
         <label>角色</label>
         <input
-          value={role}
-          onChange={(event) => setRole(event.target.value)}
+          value={values.role}
+          onChange={(event) => setField('role', event.target.value)}
           placeholder="请输入角色"
         />
       </div>
+      {errors.role && <p className="form-error">{errors.role}</p>}
+
       <div className="form-row">
         <label>状态</label>
         <select
-          value={status}
-          onChange={(event) => setStatus(event.target.value as UserStatus)}
+          value={values.status}
+          onChange={(event) =>
+            setField('status', event.target.value as UserStatus)
+          }
         >
           <option value="enabled">启用</option>
           <option value="disabled">禁用</option>
         </select>
       </div>
-      {error && <p className="form-error">{error}</p>}
+
       <div className="form-actions">
         <button onClick={handleSubmit}>
           {mode === 'edit' ? '保存修改' : '新增用户'}

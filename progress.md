@@ -2,6 +2,47 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（六）：表单抽象（自定义 Hook）与组件测试
+
+### 1. 本次目标
+
+把 `UserForm` 的「表单值 + 校验」抽成可复用的自定义 Hook `useForm`，并引入 `@testing-library/react` 给表单补组件测试。
+
+### 2. 新增/更新的文件
+
+- 新增 `src/hooks/useForm.ts`：泛型表单 Hook（`values/errors/setField/reset/submit`）。
+- `src/components/UserForm.tsx`：改用 `useForm` + 独立 `validateUser`，字段级错误提示。
+- 安装 `@testing-library/react` / `user-event` / `jest-dom`。
+- 新增 `src/test/setup.ts`：注入 jest-dom 断言 + `afterEach` cleanup。
+- `vitest.config.ts`：加 `setupFiles`。
+- 新增 `src/components/UserForm.test.tsx`：4 条组件测试。
+- 新增 `week-04-6-form-abstraction-component-testing-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- 自定义 Hook：以 `use` 开头、内部可调别的 Hook，用来复用「有状态的逻辑」。
+- `useForm` 泛型设计：`setField<K extends keyof T>(key, value: T[K])` 字段名+值类型双重安全；`errors` map 做字段级提示；校验内聚在 `submit`。
+- TS 坑：当 `Record<string, unknown>` 约束用时，对象结构要用 `type` 而非 `interface`（interface 可声明合并，不满足约束）。
+- 组件测试栈：`@testing-library/react` + `user-event` + `jest-dom`。
+- 测试哲学：像用户一样找元素和操作，不碰内部 state；查询优先 role/文字/占位符。
+- 环境准备：`setupFiles` 注入断言 + `afterEach cleanup`（防 DOM 残留）。
+- `userEvent` 操作要 `await`；用 `not.toHaveBeenCalled` 断言「校验失败不提交」。
+
+### 4. 验证结果
+
+```text
+npm test       Test Files 4 passed (4)，Tests 18 passed (18)
+npm run build  成功（tsc --noEmit 通过 + vite build，286 个模块）
+```
+
+### 5. 下一步建议
+
+1. 与真实 Spring Boot 联调：`VITE_USE_MOCK=false` 跑通全链路（第四阶段收尾）。
+2. 构建与部署：dist 产物、静态托管、Nginx 的 SPA history 回退。
+3. 覆盖率与 E2E：`vitest run --coverage` 看缺口；按需 Playwright。
+
+---
+
 ## 2026-06-13 会话记录（五）：笔记命名整理 + Vitest 单元测试
 
 ### 0. 笔记命名整理
