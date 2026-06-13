@@ -2,6 +2,54 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（三）：token 鉴权与路由守卫
+
+### 1. 本次目标
+
+在路由骨架上加一套最小可用的登录鉴权，把「request 通用层」和「React Router」真正咬合在一起，并完整记录教学笔记。
+
+### 2. 新增/更新的文件
+
+- 新增 `src/auth/auth.ts`：token 存储层（localStorage 读写 + `isLoggedIn`）。
+- 新增 `src/api/auth.ts`：`login()` 登录接口。
+- 新增 `src/pages/LoginPage.tsx`：登录页（受控表单 + 登录逻辑）。
+- 新增 `src/components/RequireAuth.tsx`：路由守卫。
+- `src/api/request.ts`：请求拦截（自动带 `Authorization: Bearer`）+ 响应拦截（401 统一 `clearToken` + 跳登录）+ `setUnauthorizedHandler` 回调注入。
+- `src/App.tsx`：加 `/login` 公开路由，`RequireAuth` 包住受保护子树，注册 401 handler。
+- `src/components/Layout.tsx`：加「退出登录」按钮。
+- `src/mocks/handlers.ts`：加 `POST /login`，数据接口校验 token（无 token 返回 401）。
+- `src/App.css`：登录页样式。
+- 新增 `week-05-auth-route-guard-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- 前后端鉴权分工：后端"真的拦"（安全边界），前端管体验和引导；前端守卫不是安全保障。
+- token 存储取舍：localStorage（最直观）vs HttpOnly Cookie（最安全）。
+- 请求拦截：request 层自动加 `Authorization`，业务接口零改。
+- 响应拦截：401 统一 `clearToken` + 跳登录，业务不用各自判断。
+- 回调注入：request 层不依赖路由，靠 `setUnauthorizedHandler` 注入 `navigate`，避免 `window.location` 整页刷新。
+- 路由守卫 `RequireAuth` 包受保护子树；`/login` 必须放守卫外。
+- 让 mock 后端也校验 token，整条链路才真实可测。
+- TS 小坑：`HttpResponse` 作类型需泛型参数，用父类型 `Response` 规避（构建时真实踩到）。
+
+### 4. 验证结果
+
+```text
+npm run build    成功（tsc --noEmit 通过 + vite build，285 个模块）
+npm run preview + curl：GET /login 、/users 均 200（SPA 兜底）
+```
+
+MSW 是浏览器内 Service Worker，preview 服务器不运行它，故 401 鉴权拦截只能在真实浏览器验证。建议浏览器手工点测：admin/123456 登录；登录后删 localStorage 的 `auth_token` 再操作，应被弹回登录页。
+
+### 5. 下一步建议
+
+1. 权限细化（RBAC）：token 带角色，按角色控制菜单/按钮显隐。
+2. 分页/筛选/排序：查询条件挪到后端 query 参数，用 `useSearchParams` 同步到 URL。
+3. 登录后跳回原页面：守卫重定向时记下来源路径，登录成功跳回去。
+4. 引入 Vitest：对 `request.ts` 的 401 分支、`auth.ts` 的 token 读写写单元测试。
+
+---
+
 ## 2026-06-13 会话记录（二）：React Router 路由
 
 ### 1. 本次目标

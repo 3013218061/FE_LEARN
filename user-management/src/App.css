@@ -172,3 +172,37 @@ button:hover {
   text-align: center;
   padding: 40px 0;
 }
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.login-card {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 6px;
+  padding: 24px;
+  width: 320px;
+}
+
+.login-card h2 {
+  margin-top: 0;
+}
+
+.login-card button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.login-hint {
+  color: #888;
+  font-size: 12px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.logout-btn {
+  margin-left: auto;
+}

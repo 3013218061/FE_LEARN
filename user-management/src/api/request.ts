@@ -1,5 +1,7 @@
-// 通用请求层：所有横切关注点（baseUrl、header、状态码判断、JSON 解析、错误包装）
+// 通用请求层：所有横切关注点（baseUrl、header、鉴权、状态码判断、JSON 解析、错误包装）
 // 集中在这里。业务 API 层只表达"我要什么"，不重复"怎么发请求"。
+
+import { getToken, clearToken } from '../auth/auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,6 +15,14 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+// 401 统一处理回调：由 App 注册一个"跳登录页"的动作。
+// request 层故意不直接依赖 React Router，靠这个回调解耦，
+// 这样既能跳转又不会整页刷新（类比 axios 的响应拦截器里注入 navigate）。
+let unauthorizedHandler: (() => void) | null = null;
+export function setUnauthorizedHandler(handler: () => void): void {
+  unauthorizedHandler = handler;
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -33,10 +43,17 @@ export async function request<T>(
   const { method = 'GET', body } = options;
   const url = `${API_BASE_URL}${path}`;
 
-  const init: RequestInit = {
-    method,
-    headers: { 'Content-Type': 'application/json' },
+  // 请求拦截：有 token 就自动带上 Authorization 头，
+  // 这样每个业务调用都不用自己操心鉴权头。
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
   };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const init: RequestInit = { method, headers };
   if (body !== undefined) {
     init.body = JSON.stringify(body);
   }
@@ -49,6 +66,14 @@ export async function request<T>(
     // 这种情况没有 HTTP 状态码，用 0 占位
     const message = err instanceof Error ? err.message : String(err);
     throw new ApiError(0, `网络请求失败: ${message}`);
+  }
+
+  // 响应拦截：401 = 未认证 / 登录过期。
+  // 统一清掉本地 token 并跳登录页，业务代码不用每个接口都判断 401。
+  if (response.status === 401) {
+    clearToken();
+    unauthorizedHandler?.();
+    throw new ApiError(401, '登录已过期，请重新登录');
   }
 
   if (!response.ok) {

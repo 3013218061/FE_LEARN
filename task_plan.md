@@ -136,8 +136,8 @@ UI = f(state)
 
 - [x] 学习 React Router 路由管理（`BrowserRouter` / 路由表 / 嵌套路由 + `Outlet` / `Link`·`NavLink` / `useNavigate` / `useParams` / 404 兜底，详见 `week-04-react-router-notes.md`）。
 - [x] 学习 API 分层封装（`src/api/request.ts` 通用请求层 + `src/api/users.ts` 业务层）。
-- [ ] 学习 token 鉴权。
-- [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError`）。
+- [x] 学习 token 鉴权（localStorage 存 token / 登录页 / 请求自动带 Authorization / 路由守卫 RequireAuth / 退出登录，详见 `week-05-auth-route-guard-notes.md`）。
+- [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError` + 请求拦截带 token + 响应拦截 401 统一跳登录）。
 - [ ] 学习分页、筛选、排序。
 - [ ] 学习表单抽象。
 - [ ] 与 Spring Boot REST API 完成联调。
