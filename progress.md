@@ -2,6 +2,50 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（四）：分页 / 筛选 / 排序与 URL 状态同步
+
+### 1. 本次目标
+
+把后台列表页从「前端假过滤」升级成「后端真分页」，并用 `useSearchParams` 把分页/筛选/排序条件同步到 URL，完整记录教学笔记。
+
+### 2. 新增/更新的文件
+
+- `src/types/user.ts`：新增 `SortOrder`、`PageResult<T>`，`FetchUsersParams` 增加 `page/pageSize/sort/order`。
+- `src/api/users.ts`：`fetchUsers` 用 `URLSearchParams` 拼 query，返回 `PageResult<User>`。
+- `src/mocks/handlers.ts`：`GET /users` 真做「筛选→排序→分页」三步；mock 数据加到 8 条。
+- `src/components/UserTable.tsx`：表头可点击排序（`sort/order/onSort` props + ▲▼ 指示）。
+- `src/pages/UserListPage.tsx`：用 `useSearchParams` 读写 URL 条件，`useEffect([searchParams])` 驱动重新请求；分页控件；写操作后重拉当前页。
+- `src/App.css`：分页与可排序表头样式。
+- 新增 `week-06-pagination-filter-sort-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- 真实后台必须后端分页：数据量大时不能把全表拉到前端过滤。
+- `PageResult<T>` 契约，`total` 是关键，类比后端 `Page<T>` / `IPage<T>`。
+- 用 `URLSearchParams` 安全拼接 query（自动 URL 编码），别手拼字符串。
+- 后端三步顺序：先筛选→再排序→最后分页；`total` 在分页前算；排序字段白名单 + 中文 `localeCompare(.., 'zh')`。
+- `useSearchParams` 把查询条件放 URL：可分享/可收藏/刷新不丢/前进后退可回溯。
+- URL 驱动闭环：改条件=改 URL，`useEffect` 监听 `searchParams` 自动重新请求。
+- 搜索框「草稿态本地 state vs 提交态写 URL」分离；改搜索/排序回第 1 页。
+- 分页场景下，增删改后重新拉当前页，保证前后端一致。
+
+### 4. 验证结果
+
+```text
+npm run build    成功（tsc --noEmit 通过 + vite build，285 个模块）
+```
+
+mock 共 8 条、每页 5 条，默认 2 页。分页/排序逻辑在浏览器内 MSW 跑，建议手工验证翻页 URL 同步、刷新保持、排序箭头、搜索回第 1 页、删除后刷新。
+
+### 5. 下一步建议
+
+1. 表单抽象：把 `UserForm` 的校验与字段配置抽成可复用表单方案。
+2. 引入 Vitest：测 `fetchUsers` 的 query 拼接、mock 的筛选/排序/分页逻辑。
+3. 与真实 Spring Boot 联调真实分页接口。
+4. 列表体验增强：防抖搜索、每页条数可选、骨架屏。
+
+---
+
 ## 2026-06-13 会话记录（三）：token 鉴权与路由守卫
 
 ### 1. 本次目标

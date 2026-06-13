@@ -138,7 +138,7 @@ UI = f(state)
 - [x] 学习 API 分层封装（`src/api/request.ts` 通用请求层 + `src/api/users.ts` 业务层）。
 - [x] 学习 token 鉴权（localStorage 存 token / 登录页 / 请求自动带 Authorization / 路由守卫 RequireAuth / 退出登录，详见 `week-05-auth-route-guard-notes.md`）。
 - [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError` + 请求拦截带 token + 响应拦截 401 统一跳登录）。
-- [ ] 学习分页、筛选、排序。
+- [x] 学习分页、筛选、排序（后端真分页 `PageResult<T>` + `useSearchParams` 把查询条件同步到 URL，详见 `week-06-pagination-filter-sort-notes.md`）。
 - [ ] 学习表单抽象。
 - [ ] 与 Spring Boot REST API 完成联调。
 - [ ] 学习构建与部署。

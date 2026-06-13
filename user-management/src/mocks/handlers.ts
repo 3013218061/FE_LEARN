@@ -21,8 +21,13 @@ let mockUsers: User[] = [
     role: '<button onclick=alert("xss")>恶意角色</button>',
     status: 'enabled',
   },
+  // 多加几条，让分页 / 排序效果可见
+  { id: 5, name: '赵六', role: '财务', status: 'enabled' },
+  { id: 6, name: '孙七', role: '运营', status: 'disabled' },
+  { id: 7, name: '周八', role: '客服', status: 'enabled' },
+  { id: 8, name: '吴九', role: '管理员', status: 'enabled' },
 ];
-let nextId = 5;
+let nextId = 9;
 
 // 模拟后端鉴权：校验请求是否带了合法的 Bearer token。
 // 没带或格式不对就返回 401，触发前端 request 层的统一 401 处理。
@@ -50,11 +55,45 @@ export const handlers = [
   }),
 
   // GET /users —— 列表（受保护，需要 token）
+  // 真实后端在这里做"筛选 -> 排序 -> 分页"三步，前端只负责传参和展示。
   http.get(`${API_BASE_URL}/users`, async ({ request }) => {
     const denied = requireToken(request);
     if (denied) return denied;
     await delay(300); // 模拟网络延迟，让 loading 状态可观察
-    return HttpResponse.json(mockUsers);
+
+    // 从 query string 读出条件
+    const url = new URL(request.url);
+    const keyword = url.searchParams.get('keyword') ?? '';
+    const page = Number(url.searchParams.get('page') ?? '1');
+    const pageSize = Number(url.searchParams.get('pageSize') ?? '5');
+    const sort = url.searchParams.get('sort') ?? '';
+    const order = url.searchParams.get('order') ?? 'asc';
+
+    // 1) 筛选
+    let result = mockUsers;
+    if (keyword) {
+      result = result.filter((u) => u.name.includes(keyword));
+    }
+
+    // 2) 排序（只允许按白名单字段排，避免乱传字段）
+    if (sort === 'id' || sort === 'name') {
+      result = [...result].sort((a, b) => {
+        let cmp: number;
+        if (sort === 'id') {
+          cmp = a.id - b.id;
+        } else {
+          cmp = a.name.localeCompare(b.name, 'zh');
+        }
+        return order === 'desc' ? -cmp : cmp;
+      });
+    }
+
+    // 3) 分页（total 是筛选后的总数，不是当前页的数量）
+    const total = result.length;
+    const start = (page - 1) * pageSize;
+    const list = result.slice(start, start + pageSize);
+
+    return HttpResponse.json({ list, total, page, pageSize });
   }),
 
   // GET /users-not-exist —— 模拟失败按钮触发的 404

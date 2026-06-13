@@ -1,9 +1,12 @@
-import type { User } from '../types/user';
+import type { User, SortOrder } from '../types/user';
 
 // props = 这个组件的"入参"，类比 Java 方法签名
 // 数据（users）往下传，事件（onXxx 回调）往上抛
 interface UserTableProps {
   users: User[];
+  sort: string;
+  order: SortOrder;
+  onSort: (field: 'id' | 'name') => void;
   onView: (user: User) => void;
   onEdit: (user: User) => void;
   onDelete: (id: number) => void;
@@ -12,17 +15,30 @@ interface UserTableProps {
 
 export function UserTable({
   users,
+  sort,
+  order,
+  onSort,
   onView,
   onEdit,
   onDelete,
   onToggleStatus,
 }: UserTableProps) {
+  // 当前列的排序指示箭头：升序 ▲ 降序 ▼，未按此列排则不显示
+  function sortIndicator(field: string) {
+    if (sort !== field) return '';
+    return order === 'asc' ? ' ▲' : ' ▼';
+  }
+
   return (
     <table className="user-table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>用户名</th>
+          <th className="sortable" onClick={() => onSort('id')}>
+            ID{sortIndicator('id')}
+          </th>
+          <th className="sortable" onClick={() => onSort('name')}>
+            用户名{sortIndicator('name')}
+          </th>
           <th>角色</th>
           <th>状态</th>
           <th>操作</th>

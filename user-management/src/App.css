@@ -126,6 +126,27 @@ button:hover {
   margin-right: 6px;
 }
 
+.user-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.user-table th.sortable:hover {
+  background: #f0f0f3;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.pagination span {
+  color: #666;
+  font-size: 13px;
+}
+
 .status {
   padding: 2px 8px;
   border-radius: 10px;
