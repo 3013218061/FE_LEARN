@@ -161,12 +161,24 @@ UI = f(state)
 - 删除等危险操作需要确认。
 - 真实 React 阶段会优先采用不可变数据更新方式，如 `filter` 生成新数组。
 
-## 5. 下一步建议
+## 5. 当前进度与下一步
 
-第二、三阶段的工程落地已完成，并已补上三项工程化升级：环境变量与多环境配置、通用 request 层、MSW Mock 层（`user-management/` 项目可通过 `npm run build`，教学笔记见 `week-04-1-env-request-mock-notes.md`）。下一步：
+四阶段计划已全部覆盖并收官：
 
-1. 把 `VITE_USE_MOCK` 改为 `false`，启动真实 Spring Boot，验证零改业务代码切到真后端。
-2. 在 `request.ts` 叠加 token 鉴权：请求头自动带 `Authorization`，401 统一跳登录。
-3. 引入 React Router，把用户管理做成一个路由页面。
-4. 接入分页/筛选/排序，把 `keyword` 过滤从前端挪到后端 query 参数。
-5. 引入 Vitest，对 `request.ts` 状态码分支和 `users.ts` 过滤逻辑写单元测试。
+```text
+第一阶段 Web 基础         ✓  week-01
+第二阶段 TypeScript 工程化  ✓  week-02
+第三阶段 React 核心        ✓  并入 week-02 + user-management 项目
+第四阶段 真实项目能力      ✓  week-04-1 ~ week-04-9（路由/鉴权/分页/表单抽象/单元+组件+E2E 测试/构建部署/联调）
+```
+
+已完成正式结业复盘：对照 `frontend-learning-plan.md` 第 8 节验收清单 10 个问题逐条作答并落到代码，见 `graduation-review.md`。
+
+后续进阶方向（超出原四阶段计划）：
+
+1. CI/CD：`npm ci && npm test && npm run build`（+E2E）接进流水线自动化。
+2. 请求层再抽象：统一响应体 `{code,message,data}` 拆包 + 业务错误码集中处理。
+3. 权限系统（RBAC）：角色驱动的菜单/按钮级权限、路由按权限动态生成。
+4. 性能：路由级代码分割（lazy + Suspense）、请求缓存（TanStack Query）。
+5. 工程质量：覆盖率门禁、可访问性（a11y）、国际化（i18n）、错误监控。
+6. 接真实 Spring Boot 跑通联调最后一步（`VITE_USE_MOCK=false`）。

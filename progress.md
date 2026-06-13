@@ -2,6 +2,45 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（十）：结业复盘与阶段验收
+
+### 1. 本次目标
+
+对照 `frontend-learning-plan.md` 第 8 节「阶段验收清单」10 个问题逐条作答，每条落到实际代码，把四阶段学习收束成结业总览，给计划画句号。
+
+### 2. 新增/更新的文件
+
+- 新增 `graduation-review.md`：四阶段成果总览 + 验收清单逐条作答 + 知识地图 + 能力清单 + 进阶路线。
+- `task_plan.md`：第 5 节改写为「当前进度与下一步」，标记四阶段收官 + 复盘完成。
+
+### 3. 验收清单作答要点（均落到代码）
+
+```text
+1  HTML/CSS/JS 三层职责（结构/表现/逻辑）
+2  Flex 一维（toolbar/nav）/ Grid 二维（detail-card dl）
+3  async/await 是 Promise 语法糖；loadUsers 的 try/catch/finally
+4  TS interface vs Java DTO：编译期擦除、结构化类型、可声明合并
+5  props（父传子只读）vs state（自有可变）；UI = f(state)
+6  useEffect 副作用 + 依赖数组（[searchParams]/[mode,editingUser]/[id]/[navigate]）
+7  request.ts 通用层 + users.ts 业务层；ApiError；拦截器思路
+8  loading/error/empty/success 四态条件渲染
+9  联调：契约对齐 + Vite 代理绕 CORS + MSW 平滑切换 + Network 排查 + API 层适配
+10 AI 工作流：先讲思路后实现、先类型后组件、每步可验证、产出留痕
+```
+
+### 4. 验证结果
+
+```text
+（本次为文档复盘，未改业务代码）
+工程状态保持：npm run build 286 模块通过；npm test 18 passed；E2E 用例就绪
+```
+
+### 5. 结语
+
+四阶段学习闭环走通：从原生 HTML 后台页到具备完整后台管理能力的 React + TS 工程，验收清单每题可答可实践。后续按 `task_plan.md` 第 5 节的进阶方向继续。
+
+---
+
 ## 2026-06-13 会话记录（九）：Playwright 端到端测试（第四阶段收官）
 
 ### 1. 本次目标
