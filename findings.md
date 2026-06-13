@@ -352,7 +352,7 @@ server: {
 
 ## 8. 工程化深化：环境变量、request 层与 Mock
 
-这一节记录 `user-management/` 在「能跑的 React 页面」之上三次工程化升级的核心心智模型，完整教学笔记见 `week-03-env-request-mock-notes.md`。三者的共同主线：
+这一节记录 `user-management/` 在「能跑的 React 页面」之上三次工程化升级的核心心智模型，完整教学笔记见 `week-04-1-env-request-mock-notes.md`。三者的共同主线：
 
 ```text
 让业务代码只表达"我要什么数据"，

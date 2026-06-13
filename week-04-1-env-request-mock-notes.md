@@ -1,4 +1,4 @@
-# 第二/四阶段衔接：环境变量、通用 request 层与 MSW Mock 学习笔记
+# 第四阶段（一）：环境变量、通用 request 层与 MSW Mock 学习笔记
 
 本笔记承接 `week-02-typescript-engineering-notes.md`，记录 `user-management/` 工程在「能跑的 React + TypeScript 用户管理页」之上做的三次工程化升级：
 

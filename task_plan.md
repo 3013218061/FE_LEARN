@@ -134,18 +134,18 @@ UI = f(state)
 
 计划任务：
 
-- [x] 学习 React Router 路由管理（`BrowserRouter` / 路由表 / 嵌套路由 + `Outlet` / `Link`·`NavLink` / `useNavigate` / `useParams` / 404 兜底，详见 `week-04-react-router-notes.md`）。
+- [x] 学习 React Router 路由管理（`BrowserRouter` / 路由表 / 嵌套路由 + `Outlet` / `Link`·`NavLink` / `useNavigate` / `useParams` / 404 兜底，详见 `week-04-2-react-router-notes.md`）。
 - [x] 学习 API 分层封装（`src/api/request.ts` 通用请求层 + `src/api/users.ts` 业务层）。
-- [x] 学习 token 鉴权（localStorage 存 token / 登录页 / 请求自动带 Authorization / 路由守卫 RequireAuth / 退出登录，详见 `week-05-auth-route-guard-notes.md`）。
+- [x] 学习 token 鉴权（localStorage 存 token / 登录页 / 请求自动带 Authorization / 路由守卫 RequireAuth / 退出登录，详见 `week-04-3-auth-route-guard-notes.md`）。
 - [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError` + 请求拦截带 token + 响应拦截 401 统一跳登录）。
-- [x] 学习分页、筛选、排序（后端真分页 `PageResult<T>` + `useSearchParams` 把查询条件同步到 URL，详见 `week-06-pagination-filter-sort-notes.md`）。
+- [x] 学习分页、筛选、排序（后端真分页 `PageResult<T>` + `useSearchParams` 把查询条件同步到 URL，详见 `week-04-4-pagination-filter-sort-notes.md`）。
 - [ ] 学习表单抽象。
 - [ ] 与 Spring Boot REST API 完成联调。
 - [ ] 学习构建与部署。
-- [ ] 引入 Vitest 做基础单元测试。
+- [x] 引入 Vitest 做基础单元测试（request 层 7 条 + fetchUsers query 拼接 4 条 + token 存储 3 条，共 14 条，详见 `week-04-5-vitest-testing-notes.md`）。
 - [ ] 根据需要引入 Playwright 做端到端测试。
 
-补充：已引入 MSW Mock 层（`src/mocks/` + `public/mockServiceWorker.js`），通过 `VITE_USE_MOCK` 开关在网络层接管假后端，后端就绪后零改业务代码即可切到真实 API。详见 `week-03-env-request-mock-notes.md`。
+补充：已引入 MSW Mock 层（`src/mocks/` + `public/mockServiceWorker.js`），通过 `VITE_USE_MOCK` 开关在网络层接管假后端，后端就绪后零改业务代码即可切到真实 API。详见 `week-04-1-env-request-mock-notes.md`。
 
 预期产出：
 
@@ -163,7 +163,7 @@ UI = f(state)
 
 ## 5. 下一步建议
 
-第二、三阶段的工程落地已完成，并已补上三项工程化升级：环境变量与多环境配置、通用 request 层、MSW Mock 层（`user-management/` 项目可通过 `npm run build`，教学笔记见 `week-03-env-request-mock-notes.md`）。下一步：
+第二、三阶段的工程落地已完成，并已补上三项工程化升级：环境变量与多环境配置、通用 request 层、MSW Mock 层（`user-management/` 项目可通过 `npm run build`，教学笔记见 `week-04-1-env-request-mock-notes.md`）。下一步：
 
 1. 把 `VITE_USE_MOCK` 改为 `false`，启动真实 Spring Boot，验证零改业务代码切到真后端。
 2. 在 `request.ts` 叠加 token 鉴权：请求头自动带 `Authorization`，401 统一跳登录。

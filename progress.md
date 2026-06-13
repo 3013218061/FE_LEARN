@@ -2,6 +2,65 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（五）：笔记命名整理 + Vitest 单元测试
+
+### 0. 笔记命名整理
+
+原计划只有四个阶段（四周），但此前把第四阶段的多节误命名成 `week-03/04/05/06`，看着像第五、六周。本次重命名为「第四阶段子节」方案，使文件结构忠实反映四阶段：
+
+```text
+week-01-web-basics-notes.md             第一阶段 Web 基础
+week-02-typescript-engineering-notes.md 第二阶段 TypeScript 与工程化
+（第三阶段 React 核心：成果即 user-management 项目本身，讲解并入 week-02）
+week-04-1-env-request-mock-notes.md     第四阶段（一）环境变量 / request 层 / MSW
+week-04-2-react-router-notes.md         第四阶段（二）React Router
+week-04-3-auth-route-guard-notes.md     第四阶段（三）token 鉴权与路由守卫
+week-04-4-pagination-filter-sort-notes.md 第四阶段（四）分页/筛选/排序
+week-04-5-vitest-testing-notes.md       第四阶段（五）Vitest 单元测试
+```
+
+同步修正了各笔记内部标题编号、交叉引用，以及 `task_plan.md` / `progress.md` / `findings.md` 里的文件名引用。
+
+### 1. 本次目标
+
+引入单元测试框架 Vitest，为前面写的 request 通用层、`fetchUsers` query 拼接、token 存储层补上测试。
+
+### 2. 新增/更新的文件
+
+- 安装 `vitest@4` + `jsdom@29`（devDependencies）。
+- `vitest.config.ts`：jsdom 环境 + 测试用 `VITE_API_BASE_URL`。
+- `package.json`：加 `test` / `test:watch` 脚本。
+- `src/api/request.test.ts`：request 层 7 条断言（200/204/错误/带 token/不带 token/401/网络失败）。
+- `src/api/users.test.ts`：fetchUsers query 拼接 4 条断言。
+- `src/auth/auth.test.ts`：token 存储 3 条断言。
+- 新增 `week-04-5-vitest-testing-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- 前端单测优先覆盖纯逻辑（request 层、拼参、token），最易藏 bug、最划算。
+- Vitest = 前端 JUnit，吃 Vite 配置；jsdom 在 Node 里模拟浏览器（补 localStorage/Response）。
+- 配置要点：`environment: 'jsdom'`；`env` 给定 `VITE_API_BASE_URL` 让 URL 可解析。
+- 核心套路：`vi.stubGlobal('fetch', vi.fn())` 把外部依赖换成可控替身；`fetchMock.mock.calls[0][1]` 断言请求头。
+- 异步断言：成功 `await`；失败 `await expect(...).rejects.toMatchObject(...)`。
+- `beforeEach` 复位全局状态（token / 回调 / mock），保证测试互相独立。
+- 测试文件就近放、命名 `xxx.test.ts`，参与 `tsc` 检查但不进 bundle。
+
+### 4. 验证结果
+
+```text
+npm test       Test Files 3 passed (3)，Tests 14 passed (14)
+npm run build  成功（tsc --noEmit 通过 + vite build，285 个模块）
+```
+
+### 5. 下一步建议
+
+1. 组件测试：引入 `@testing-library/react`，测 `UserForm` 校验、`UserTable` 渲染与点击。
+2. 表单抽象：把 `UserForm` 的字段配置与校验抽成可复用方案，并补测试。
+3. 覆盖率：`vitest run --coverage` 看未覆盖分支。
+4. 与真实 Spring Boot 联调：`VITE_USE_MOCK=false` 跑通全链路。
+
+---
+
 ## 2026-06-13 会话记录（四）：分页 / 筛选 / 排序与 URL 状态同步
 
 ### 1. 本次目标
@@ -16,7 +75,7 @@
 - `src/components/UserTable.tsx`：表头可点击排序（`sort/order/onSort` props + ▲▼ 指示）。
 - `src/pages/UserListPage.tsx`：用 `useSearchParams` 读写 URL 条件，`useEffect([searchParams])` 驱动重新请求；分页控件；写操作后重拉当前页。
 - `src/App.css`：分页与可排序表头样式。
-- 新增 `week-06-pagination-filter-sort-notes.md`：完整教学笔记。
+- 新增 `week-04-4-pagination-filter-sort-notes.md`：完整教学笔记。
 
 ### 3. 本次沉淀的教学内容
 
@@ -63,7 +122,7 @@ mock 共 8 条、每页 5 条，默认 2 页。分页/排序逻辑在浏览器�
 - `src/components/Layout.tsx`：加「退出登录」按钮。
 - `src/mocks/handlers.ts`：加 `POST /login`，数据接口校验 token（无 token 返回 401）。
 - `src/App.css`：登录页样式。
-- 新增 `week-05-auth-route-guard-notes.md`：完整教学笔记。
+- 新增 `week-04-3-auth-route-guard-notes.md`：完整教学笔记。
 
 ### 3. 本次沉淀的教学内容
 
@@ -113,7 +172,7 @@ MSW 是浏览器内 Service Worker，preview 服务器不运行它，故 401 鉴
 - `src/api/users.ts`：新增 `getUser(id)`（`GET /users/:id`）。
 - `src/mocks/handlers.ts`：新增 `GET /users/:id` mock（找不到返回 404）。
 - `src/App.css`：新增导航栏和详情卡片样式。
-- 新增 `week-04-react-router-notes.md`：完整记录 React Router 教学内容。
+- 新增 `week-04-2-react-router-notes.md`：完整记录 React Router 教学内容。
 
 ### 3. 本次沉淀的教学内容
 
@@ -157,7 +216,7 @@ npm run preview + curl：GET / 、/users 、/users/1 均 200（SPA 兜底）
 
 ### 2. 新增/更新的文件
 
-- 新增 `week-03-env-request-mock-notes.md`：完整记录环境变量与多环境配置、通用 request 层、MSW Mock 层三块教学内容。
+- 新增 `week-04-1-env-request-mock-notes.md`：完整记录环境变量与多环境配置、通用 request 层、MSW Mock 层三块教学内容。
 - 更新 `task_plan.md`：勾选「理解环境变量与不同环境配置」「API 分层封装」「请求拦截与统一错误处理」，补充 MSW Mock 说明，刷新「下一步建议」。
 - 更新 `findings.md`：新增三块工程化心智模型（环境变量、request 层、MSW Mock）。
 - 更新 `progress.md`：本条会话记录。
