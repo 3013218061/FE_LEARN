@@ -2,6 +2,46 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（九）：Playwright 端到端测试（第四阶段收官）
+
+### 1. 本次目标
+
+补上端到端测试，用真实浏览器跑「登录→列表→分页→搜索→编辑→登出」完整主流程，完成第四阶段最后一项。
+
+### 2. 新增/更新的文件
+
+- 安装 `@playwright/test@1.60`。
+- `playwright.config.ts`：testDir `./e2e`，webServer 自动起 `npm run dev`，chromium 项目。
+- `e2e/user-management.spec.ts`：2 个用例（守卫重定向 + 完整主流程）。
+- `vitest.config.ts`：`exclude` 加 `e2e/**`，避免 vitest 误抓 Playwright 用例。
+- `package.json`：加 `test:e2e` 脚本。
+- 新增 `week-04-9-playwright-e2e-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- 测试金字塔：单元（多/快）→ 组件 → E2E（少/慢/最真实）；E2E 抓集成问题。
+- Playwright 驱真实浏览器、自动等待、选择器贴近用户。
+- E2E 跑在 mock 模式（dev + VITE_USE_MOCK=true），真浏览器里 MSW 生效，无需真后端。
+- 主流程用例把守卫/鉴权/URL 同步分页搜索/表单/有状态 mock 全串起来验证。
+- 精确定位：`getByRole('row',{name}).getByRole('button',{name})` 在指定行操作。
+- vitest 与 Playwright 划清地盘（vitest 排除 e2e/，Playwright testDir 指 ./e2e）。
+
+### 4. 验证结果
+
+```text
+npx playwright test --list   列出 2 个用例（配置+用例编译通过）
+npm test                     18 passed（vitest 正确排除 e2e）
+npm run build                成功（286 个模块）
+```
+
+环境限制：网络出口屏蔽 `cdn.playwright.dev` 且无现成浏览器，chromium 无法下载，E2E 未能实跑；用例与配置已就绪，待有浏览器的环境 `npx playwright install chromium && npm run test:e2e`。
+
+### 5. 第四阶段收官
+
+四阶段计划全部覆盖：Web 基础 / TypeScript 工程化 / React 核心 / 真实项目能力（路由、鉴权、分页、表单抽象、单元+组件+E2E 测试、构建部署、联调方案）。后续进阶：CI/CD、统一响应体适配、代码分割、RBAC、a11y/i18n。
+
+---
+
 ## 2026-06-13 会话记录（八）：与 Spring Boot 联调（CORS 与开发代理）
 
 ### 1. 本次目标

@@ -143,7 +143,7 @@ UI = f(state)
 - [x] 与 Spring Boot REST API 完成联调（CORS 原理 + Vite 开发代理 + mock 平滑切真后端 + 接口对齐排查方法论，详见 `week-04-8-spring-boot-integration-notes.md`；联调配置与方法论就绪，连真实后端的最后一步待后端环境）。
 - [x] 学习构建与部署（`npm run build` 产物 / hash 缓存失效 / 环境变量构建时焊死 / SPA history 回退 / 多阶段 Dockerfile + Nginx，详见 `week-04-7-build-and-deploy-notes.md`）。
 - [x] 引入 Vitest 做基础单元测试（request 层 7 条 + fetchUsers query 拼接 4 条 + token 存储 3 条，共 14 条，详见 `week-04-5-vitest-testing-notes.md`）。
-- [ ] 根据需要引入 Playwright 做端到端测试。
+- [x] 引入 Playwright 做端到端测试（覆盖登录→列表→分页→搜索→编辑→登出主流程，跑在 mock 模式无需真后端；详见 `week-04-9-playwright-e2e-notes.md`。用例与配置已就绪并通过 `--list` 校验；本环境因网络策略屏蔽浏览器下载未能实跑，待有浏览器的环境执行）。
 
 补充：已引入 MSW Mock 层（`src/mocks/` + `public/mockServiceWorker.js`），通过 `VITE_USE_MOCK` 开关在网络层接管假后端，后端就绪后零改业务代码即可切到真实 API。详见 `week-04-1-env-request-mock-notes.md`。
 
