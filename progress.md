@@ -2,6 +2,46 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（七）：构建与部署
+
+### 1. 本次目标
+
+讲清前端工程从源码到线上的构建与部署：`npm run build` 产物、静态托管、SPA history 回退，并落地真实部署文件（Dockerfile + nginx.conf）。
+
+### 2. 新增/更新的文件
+
+- 新增 `user-management/deploy/nginx.conf`：SPA `try_files` 回退 + gzip + assets 强缓存。
+- 新增 `user-management/Dockerfile`：多阶段构建（Node 编译 / Nginx 托管）+ 依赖层缓存。
+- 新增 `user-management/.dockerignore`。
+- 新增 `week-04-7-build-and-deploy-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- 前端部署 = 发静态文件，浏览器去跑；纯 SPA 线上不需要 Node 进程。
+- `npm run build` = tsc 类型闸门 + vite 打包 → dist（index.html + 带 hash 的 assets）。
+- hash 文件名做缓存失效：assets 长期强缓存，index.html 不缓存。
+- 环境变量构建时焊死：`VITE_` 变量被替换成字面量，不同环境分别构建。
+- 生产包干净：实测 grep 验证生产 API 地址已注入、无 dev 地址泄漏、MSW（setupWorker）零残留（动态 import + 关闭开关被 tree-shaking）。
+- SPA history 回退：`try_files $uri $uri/ /index.html`，否则深链接刷新 404（必配，伏笔回收）。
+- Dockerfile 多阶段构建 + 先拷 package*.json 跑 npm ci 的层缓存优化。
+
+### 4. 验证结果
+
+```text
+npm run build   成功（286 个模块）；dist 产物含 index.html + assets/（hash）+ public 拷贝
+bundle 实测     注入 https://api.mycompany.com/api；无 localhost:8080；setupWorker 出现 0 次
+docker          守护进程无权限，未实际构建镜像；Dockerfile/nginx.conf 为标准写法
+```
+
+### 5. 下一步建议
+
+1. 与真实 Spring Boot 联调：`VITE_USE_MOCK=false` 跑通登录+CRUD+分页全链路（第四阶段最后一块）。
+2. CI/CD：把 `npm ci && npm run build && npm test` 接进流水线。
+3. 端到端测试：引入 Playwright 跑主流程。
+4. 性能优化：路由级代码分割、首屏优化。
+
+---
+
 ## 2026-06-13 会话记录（六）：表单抽象（自定义 Hook）与组件测试
 
 ### 1. 本次目标

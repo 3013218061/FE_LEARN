@@ -1,0 +1,5 @@
+# 构建 Docker 镜像时不拷进上下文的东西，加快构建、避免污染
+node_modules
+dist
+.git
+*.log
