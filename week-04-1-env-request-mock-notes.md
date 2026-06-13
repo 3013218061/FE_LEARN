@@ -56,11 +56,15 @@ application-prod.yml
 
 ```bash
 # 开发环境配置（npm run dev 时生效）
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_BASE_URL=/api
 VITE_APP_TITLE=用户管理（开发环境）
 # 是否启用 MSW mock。后端真实就绪后改为 false，业务代码无需任何改动。
 VITE_USE_MOCK=true
 ```
+
+> 注：早期这里写的是绝对地址 `http://localhost:8080/api`，
+> 在「与 Spring Boot 联调」一节（`week-04-8`）改成了相对路径 `/api` + Vite 开发代理，
+> 让浏览器同源请求、绕开 CORS。下面讲解仍以"配置入口"为重点，地址形态见 week-04-8。
 
 `.env.production` 内容：
 

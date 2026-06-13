@@ -2,6 +2,49 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录（八）：与 Spring Boot 联调（CORS 与开发代理）
+
+### 1. 本次目标
+
+讲清前端与真实 Spring Boot 对接：CORS 原理、开发代理绕开跨域、mock 平滑切真后端、接口对齐排查方法论，并落地 Vite 开发代理配置。
+
+### 2. 新增/更新的文件
+
+- `vite.config.ts`：加 `server.proxy`，把 `/api` 转发到 `http://localhost:8080`。
+- `.env.development`：`VITE_API_BASE_URL` 由绝对地址改为相对 `/api`（配合代理、绕开 CORS）。
+- `week-04-1-env-request-mock-notes.md`：同步更新 `.env.development` 示例片段并加注说明。
+- 新增 `week-04-8-spring-boot-integration-notes.md`：完整教学笔记。
+
+### 3. 本次沉淀的教学内容
+
+- CORS 是浏览器同源策略，不是后端挂了；Postman 成功 ≠ 浏览器成功。
+- 两种解法：后端开 CORS（生产）/ 开发代理（开发首选）。
+- 开发代理：地址改相对 `/api` + `vite server.proxy` 转发到 8080，浏览器同源。
+- 三层不打架：mock 模式 MSW 先拦；真后端模式经代理打到后端；切换只改 `VITE_USE_MOCK`。
+- 平滑切换：mock 写得像真后端（同 URL/方法/状态码/结构），切真后端业务代码零改。
+- 联调排查：Network 看 URL/状态码/请求头/请求体/响应，再与前端类型契约比对。
+- 后端落差：统一响应体 `{code,data}`、分页 `{content,totalElements}` 在 API 层适配。
+- 生产跨域：Nginx 反代 `/api`（同域）或后端开 CORS。
+
+### 4. 验证结果
+
+```text
+npm run build   成功（286 个模块）
+npm test        18 passed
+npm run dev     5173 正常启动；GET / 200；GET /api/users 500（经代理转发到未起的 8080，
+                证明代理已生效；浏览器 mock 模式下 MSW 会更早拦截）
+```
+
+本环境无真实 Spring Boot，未跑通"切 false 连真后端"的最后一步；配置与方法论已就绪。
+
+### 5. 下一步建议
+
+1. 端到端测试：Playwright 跑登录→查询→翻页→编辑→登出主流程。
+2. 统一响应体适配：request 层加 `{code,message,data}` 拆包 + 业务码处理。
+3. CI/CD 流水线；路由级代码分割。
+
+---
+
 ## 2026-06-13 会话记录（七）：构建与部署
 
 ### 1. 本次目标
