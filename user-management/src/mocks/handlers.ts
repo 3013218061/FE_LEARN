@@ -37,6 +37,17 @@ export const handlers = [
     return new HttpResponse(null, { status: 404 });
   }),
 
+  // GET /users/:id —— 单个用户详情（详情页用）
+  http.get(`${API_BASE_URL}/users/:id`, async ({ params }) => {
+    await delay(300);
+    const id = Number(params.id);
+    const user = mockUsers.find((u) => u.id === id);
+    if (!user) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    return HttpResponse.json(user);
+  }),
+
   // POST /users —— 新增
   http.post(`${API_BASE_URL}/users`, async ({ request }) => {
     await delay(300);

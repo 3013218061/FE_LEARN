@@ -134,7 +134,7 @@ UI = f(state)
 
 计划任务：
 
-- [ ] 学习 React Router 路由管理。
+- [x] 学习 React Router 路由管理（`BrowserRouter` / 路由表 / 嵌套路由 + `Outlet` / `Link`·`NavLink` / `useNavigate` / `useParams` / 404 兜底，详见 `week-04-react-router-notes.md`）。
 - [x] 学习 API 分层封装（`src/api/request.ts` 通用请求层 + `src/api/users.ts` 业务层）。
 - [ ] 学习 token 鉴权。
 - [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError`）。

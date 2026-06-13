@@ -21,6 +21,11 @@ export async function fetchUsers(
   return users.filter((user) => user.name.includes(trimmed));
 }
 
+// 查询单个用户（详情页用）
+export async function getUser(id: number): Promise<User> {
+  return request<User>(`/users/${id}`);
+}
+
 // 新增用户
 export async function createUser(payload: CreateUserRequest): Promise<User> {
   return request<User>('/users', { method: 'POST', body: payload });

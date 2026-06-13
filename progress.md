@@ -2,7 +2,54 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
-## 2026-06-13 会话记录
+## 2026-06-13 会话记录（二）：React Router 路由
+
+### 1. 本次目标
+
+进入第四阶段第一项「React Router 路由管理」，把 `user-management/` 从「单页」重构成「带路由的多页面」，并完整记录教学笔记。
+
+### 2. 新增/更新的文件
+
+- 安装依赖 `react-router-dom@7`。
+- `src/main.tsx`：用 `<BrowserRouter>` 包住 `<App/>`。
+- `src/App.tsx`：从「业务总控」瘦身成「路由表」（`Routes` / `Route` / `Navigate`）。
+- 新增 `src/components/Layout.tsx`：公共外壳（标题 + 导航 `NavLink` + `Outlet`）。
+- 新增 `src/pages/UserListPage.tsx`：原 `App.tsx` 的用户管理逻辑整体搬过来，新增「详情」跳转（`useNavigate`）。
+- 新增 `src/pages/UserDetailPage.tsx`：详情页，`useParams` 读 `:id` + `getUser` 加载。
+- 新增 `src/pages/NotFoundPage.tsx`：`path="*"` 404 兜底页。
+- `src/components/UserTable.tsx`：新增 `onView` 回调和「详情」按钮。
+- `src/api/users.ts`：新增 `getUser(id)`（`GET /users/:id`）。
+- `src/mocks/handlers.ts`：新增 `GET /users/:id` mock（找不到返回 404）。
+- `src/App.css`：新增导航栏和详情卡片样式。
+- 新增 `week-04-react-router-notes.md`：完整记录 React Router 教学内容。
+
+### 3. 本次沉淀的教学内容
+
+- 前端路由 vs 后端路由：URL→组件（浏览器内、不刷新） vs URL→Controller（整页刷新）。
+- 路由表 = 组件版 `@RequestMapping`；`App.tsx` 瘦身为纯路由表。
+- 嵌套路由 + `Outlet` 做公共布局；`index` + `<Navigate>` 做默认页重定向；`path="*"` 做 404。
+- 两种跳转：声明式 `Link`/`NavLink`（站内绝不用 `<a href>`） vs 编程式 `useNavigate`（含 `navigate(-1)`）。
+- `useParams` 读 `:id`，类比 `@PathVariable`，值是字符串要 `Number()` 转。
+- 引入路由后的分层：App=路由表，`pages/`=页面逻辑，`components/`=复用展示组件。
+- 部署坑：静态服务器要配 `try_files ... /index.html` 回退，否则深链接刷新 404。
+
+### 4. 验证结果
+
+```text
+npm run build    成功（tsc --noEmit 通过 + vite build，281 个模块）
+npm run preview + curl：GET / 、/users 、/users/1 均 200（SPA 兜底）
+```
+
+### 5. 下一步建议
+
+1. token 鉴权：`request.ts` 自动带 `Authorization`，401 跳登录页。
+2. 路由守卫：`<RequireAuth>` 包裹受保护路由。
+3. 分页/筛选/排序：查询条件挪到后端 query 参数，并用 `useSearchParams` 同步到 URL。
+4. 引入 Vitest 写单元测试。
+
+---
+
+## 2026-06-13 会话记录（一）：环境变量 / request 层 / MSW
 
 ### 1. 本次目标
 

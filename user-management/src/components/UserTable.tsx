@@ -4,6 +4,7 @@ import type { User } from '../types/user';
 // 数据（users）往下传，事件（onXxx 回调）往上抛
 interface UserTableProps {
   users: User[];
+  onView: (user: User) => void;
   onEdit: (user: User) => void;
   onDelete: (id: number) => void;
   onToggleStatus: (user: User) => void;
@@ -11,6 +12,7 @@ interface UserTableProps {
 
 export function UserTable({
   users,
+  onView,
   onEdit,
   onDelete,
   onToggleStatus,
@@ -40,6 +42,7 @@ export function UserTable({
               </span>
             </td>
             <td>
+              <button onClick={() => onView(user)}>详情</button>
               <button onClick={() => onEdit(user)}>编辑</button>
               <button onClick={() => onToggleStatus(user)}>
                 {user.status === 'enabled' ? '禁用' : '启用'}

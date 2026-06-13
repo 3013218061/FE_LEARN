@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 
 // 按开关启动 MSW。必须在渲染前等 worker.start() resolve，
@@ -18,7 +19,11 @@ async function enableMocking() {
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <App />
+      {/* BrowserRouter 用 HTML5 History API 管理 URL，
+          让 URL 变化但页面不整页刷新（SPA 单页应用的核心） */}
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </StrictMode>,
   );
 });

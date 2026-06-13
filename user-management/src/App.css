@@ -15,6 +15,27 @@ h1 {
   font-size: 20px;
 }
 
+.nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e5e5ea;
+  padding-bottom: 8px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #555;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.nav a.active {
+  background: #e6f0ff;
+  color: #1a5fd0;
+  font-weight: 600;
+}
+
 .toolbar {
   display: flex;
   gap: 8px;
@@ -119,4 +140,35 @@ button:hover {
 .status-disabled {
   background: #fbeae9;
   color: #d23f31;
+}
+
+.detail-card {
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.detail-card h3 {
+  margin-top: 0;
+}
+
+.detail-card dl {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+}
+
+.detail-card dt {
+  color: #888;
+}
+
+.detail-card dd {
+  margin: 0;
+}
+
+.not-found {
+  text-align: center;
+  padding: 40px 0;
 }
