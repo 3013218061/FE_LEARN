@@ -349,3 +349,70 @@ server: {
 - 在工程化项目里落地当前 `User`、请求参数、API 返回值等类型设计。
 - 进入 React 前，应明确传统 DOM 的痛点：手动 DOM 更新、状态分散、事件绑定复杂。
 - 第二阶段应继续把当前原生 JS 心智模型迁移到 TypeScript + 工程化项目结构中。
+
+## 8. 工程化深化：环境变量、request 层与 Mock
+
+这一节记录 `user-management/` 在「能跑的 React 页面」之上三次工程化升级的核心心智模型，完整教学笔记见 `week-03-env-request-mock-notes.md`。三者的共同主线：
+
+```text
+让业务代码只表达"我要什么数据"，
+把"连哪个环境、怎么发请求、谁来响应"全部下沉成基础设施。
+```
+
+### 8.1 环境变量与多环境配置
+
+```text
+.env.development / .env.production   多套环境配置，类比 Spring 的 application-{env}.yml
+npm run dev / npm run build          Vite 自动选对应 .env 文件，无需手动指定 profile
+VITE_ 前缀                            安全闸门：只有带前缀的变量才注入浏览器代码
+import.meta.env.VITE_xxx             代码读取入口
+值永远是字符串                         VITE_USE_MOCK 要和 'true' 比较，Vite 不做类型转换
+vite-env.d.ts                        给环境变量补类型，防拼错
+```
+
+关键安全直觉：被注入到前端的变量等于公开给用户浏览器，`VITE_` 前缀强制开发者确认"这个值可以公开"，密钥类配置绝不能加前缀。
+
+### 8.2 通用 request 层
+
+```text
+request.ts   横切关注点一处实现：URL、header、状态码判断、JSON 解析、错误包装
+users.ts     只表达业务语义（GET/POST/PUT/DELETE /users），组件完全不碰 fetch
+ApiError     带 HTTP status 的自定义异常，类比后端 BusinessException(code, message)
+泛型 <T>      调用点决定返回类型，类比 <T> T get(String url, Class<T> type)
+unknown body 强制显式 JSON.stringify，比 any 安全
+```
+
+最容易混的认知点：
+
+```text
+fetch 只在网络层失败时 reject（断网、DNS、CORS）—— 这类失败用 status=0 表示。
+后端返回 404/500 时 fetch 是正常 resolve 的，必须自己判断 response.ok。
+204 No Content 响应体为空，不能调用 .json()，要提前返回。
+```
+
+### 8.3 MSW Mock 层
+
+```text
+拦截层级      在网络层（Service Worker）拦截，不是在业务代码里写 if-else 返回假数据
+解耦效果      业务代码以为在和真后端通信，无感；后端就绪后零改业务代码
+有状态 mock   mockUsers 数组，POST 真加 / DELETE 真删 / PUT 真改，体验接近真后端
+URL 一致      handler 和真实请求都用同一 baseUrl 拼，否则拦不到
+:id 路径参数  写法类比 @PathVariable
+开关          VITE_USE_MOCK 控制启停，切环境零改业务代码
+动态 import   生产 bundle 不含 mock 代码
+渲染前等待     必须 await worker.start() 后再 render，否则首个请求漏拦（隐藏 bug 高发点）
+```
+
+类比后端：MSW 相当于用 WireMock / MockServer 起一个假服务，而不是在 Service 层写 if-else 返回假对象。
+
+### 8.4 三层叠加后的分层全貌
+
+```text
+配置层    .env.* + import.meta.env + vite-env.d.ts     解决"连哪个环境"
+请求层    src/api/request.ts                            解决"怎么发请求"
+业务层    src/api/users.ts                              表达业务语义
+Mock 层   src/mocks/* + public/mockServiceWorker.js     解决"后端没好怎么开发"
+视图层    App.tsx / UserForm.tsx / UserTable.tsx        状态驱动 UI
+```
+
+这套分层把项目从"一个能跑的 React 页面"推进到"具备真实项目分层结构的工程"，为第四阶段（React Router、鉴权、分页/筛选/排序、与 Spring Boot 联调、Vitest 测试）打好底座。

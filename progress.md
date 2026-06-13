@@ -2,6 +2,70 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-13 会话记录
+
+### 1. 本次目标
+
+把 `user-management/` 工程在「能跑的 React + TypeScript 用户管理页」之上做的三次工程化升级，完整记录成教学笔记。这三次升级此前已落到代码（对应 `dev_claude` 分支三次提交），但教学笔记里还没有沉淀。
+
+涉及提交：
+
+```text
+664ebb3 feat: 引入环境变量与多环境配置
+69fd6f2 refactor: 抽出通用 request 层，统一 API 错误处理
+8a79fc7 feat: 引入 MSW mock 层，业务代码与假后端在网络层解耦
+```
+
+### 2. 新增/更新的文件
+
+- 新增 `week-03-env-request-mock-notes.md`：完整记录环境变量与多环境配置、通用 request 层、MSW Mock 层三块教学内容。
+- 更新 `task_plan.md`：勾选「理解环境变量与不同环境配置」「API 分层封装」「请求拦截与统一错误处理」，补充 MSW Mock 说明，刷新「下一步建议」。
+- 更新 `findings.md`：新增三块工程化心智模型（环境变量、request 层、MSW Mock）。
+- 更新 `progress.md`：本条会话记录。
+
+### 3. 本次沉淀的教学内容
+
+#### 3.1 环境变量与多环境配置
+
+- `.env.development` / `.env.production` 对应 Spring profile（`application-{env}.yml`），`npm run dev` / `npm run build` 自动选文件。
+- `VITE_` 前缀是安全闸门：只有带前缀的变量才注入浏览器代码，等于"我确认这个值可以公开"。
+- `import.meta.env.VITE_xxx` 是读取入口；值永远是字符串，`VITE_USE_MOCK` 要和 `'true'` 比较。
+- `src/vite-env.d.ts` 给环境变量补类型，防止拼错。
+
+#### 3.2 通用 request 层
+
+- `request.ts` 收拢横切关注点（URL、header、状态码判断、JSON 解析、错误包装），`users.ts` 只表达业务语义。
+- `ApiError(status, message)` 类比后端 `BusinessException(code, message)`。
+- 泛型 `request<T>` 让调用点指定返回类型；`body?: unknown` 强制显式序列化，比 `any` 安全。
+- 两类失败要分清：`fetch` 抛错=网络层失败（status=0），`response.ok===false`=HTTP 错误（4xx/5xx）。
+- 204 No Content 不能 `.json()`，提前返回。
+
+#### 3.3 MSW Mock 层
+
+- 在网络层（Service Worker）拦截请求，业务代码无感，后端就绪后零改业务代码。
+- `handlers.ts` 是有状态的内存假后端，增删改查真的改 `mockUsers` 数组；`:id` 路径参数写法类比 `@PathVariable`。
+- handler URL 必须和真实请求 URL 用同一 baseUrl 拼，否则拦不到。
+- `main.tsx` 用动态 `import` 让 mock 代码不进生产 bundle；必须 `await worker.start()` 后再渲染，否则首个请求漏拦。
+- `VITE_USE_MOCK` 开关控制启停。
+
+### 4. 验证结果
+
+```text
+npm run build   成功（tsc --noEmit 类型检查通过 + vite build 产物生成）
+```
+
+说明三层改造未破坏类型契约，工程仍可正常构建。浏览器手工点测建议在有真实浏览器的环境补做。
+
+### 5. 下一步建议
+
+1. 把 `VITE_USE_MOCK` 改为 `false`，启动真实 Spring Boot，验证零改业务代码切到真后端。
+2. 在 `request.ts` 叠加 token 鉴权：自动带 `Authorization`，401 统一跳登录。
+3. 引入 React Router，把用户管理做成路由页面。
+4. 接入分页/筛选/排序，把 `keyword` 过滤挪到后端 query 参数。
+5. 引入 Vitest，对 `request.ts` 状态码分支和 `users.ts` 过滤逻辑写单元测试。
+
+---
+
 ## 2026-05-22 会话记录
 
 ### 1. 本次目标

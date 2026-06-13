@@ -93,7 +93,7 @@ HTML/CSS/JavaScript
 - [x] 创建 Vite + React + TypeScript 项目（`user-management/`）。
 - [x] 定义 `User`、`CreateUserRequest`、`UpdateUserRequest` 等接口类型（`src/types/user.ts`）。
 - [x] 封装基础 API 请求方法（`src/api/users.ts`）。
-- [ ] 理解环境变量与不同环境配置。
+- [x] 理解环境变量与不同环境配置（`.env.development` / `.env.production` / `import.meta.env` / `vite-env.d.ts`）。
 
 预期产出：
 
@@ -135,15 +135,17 @@ UI = f(state)
 计划任务：
 
 - [ ] 学习 React Router 路由管理。
-- [ ] 学习 API 分层封装。
+- [x] 学习 API 分层封装（`src/api/request.ts` 通用请求层 + `src/api/users.ts` 业务层）。
 - [ ] 学习 token 鉴权。
-- [ ] 学习请求拦截与统一错误处理。
+- [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError`）。
 - [ ] 学习分页、筛选、排序。
 - [ ] 学习表单抽象。
 - [ ] 与 Spring Boot REST API 完成联调。
 - [ ] 学习构建与部署。
 - [ ] 引入 Vitest 做基础单元测试。
 - [ ] 根据需要引入 Playwright 做端到端测试。
+
+补充：已引入 MSW Mock 层（`src/mocks/` + `public/mockServiceWorker.js`），通过 `VITE_USE_MOCK` 开关在网络层接管假后端，后端就绪后零改业务代码即可切到真实 API。详见 `week-03-env-request-mock-notes.md`。
 
 预期产出：
 
@@ -161,9 +163,10 @@ UI = f(state)
 
 ## 5. 下一步建议
 
-第二、三阶段的工程落地已完成（`user-management/` 项目可通过 `npm run build`）。下一步：
+第二、三阶段的工程落地已完成，并已补上三项工程化升级：环境变量与多环境配置、通用 request 层、MSW Mock 层（`user-management/` 项目可通过 `npm run build`，教学笔记见 `week-03-env-request-mock-notes.md`）。下一步：
 
-1. 学习环境变量与多环境配置（`.env` / `import.meta.env`），把 API 基础地址抽成配置。
-2. 进入第四阶段：引入 React Router、API 分层封装、统一错误处理、分页/筛选/排序。
-3. 与真实 Spring Boot REST API 联调，把 `src/api/users.ts` 里的模拟写操作替换为 POST/PUT/DELETE。
-4. 引入 Vitest 做基础单元测试。
+1. 把 `VITE_USE_MOCK` 改为 `false`，启动真实 Spring Boot，验证零改业务代码切到真后端。
+2. 在 `request.ts` 叠加 token 鉴权：请求头自动带 `Authorization`，401 统一跳登录。
+3. 引入 React Router，把用户管理做成一个路由页面。
+4. 接入分页/筛选/排序，把 `keyword` 过滤从前端挪到后端 query 参数。
+5. 引入 Vitest，对 `request.ts` 状态码分支和 `users.ts` 过滤逻辑写单元测试。
