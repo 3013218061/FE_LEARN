@@ -2,6 +2,45 @@
 
 本文档用于记录每次学习会话完成的内容、文件变化、验证结果和下一步计划。
 
+## 2026-06-15 会话记录（十一）：接真实 Spring Boot 后端跑通联调
+
+### 1. 本次目标
+
+把"与 Spring Boot 联调"的最后一步真正跑通：写一个真实 Spring Boot 后端，切 `VITE_USE_MOCK=false`，经 Vite 代理验证前端的真实 HTTP 链路。
+
+### 2. 新增/更新的文件
+
+- 新增 `backend/`：最小 Spring Boot 工程（pom.xml + `UserManagementApplication` / `User` record / `UserController` / `AuthFilter` + application.properties + .gitignore + README.md）。JDK 21 + Maven，监听 8080，`context-path=/api`。
+- `week-04-8-spring-boot-integration-notes.md` §7 改写为「实测：接真实 Spring Boot 跑通」，记录后端实现与逐条实测结果。
+- `task_plan.md` / `progress.md`：标记联调最后一步已真正完成。
+
+### 3. 后端实现（对照前端契约）
+
+- `UserController`：`POST /api/login`（admin/123456 发 token，错误 401）、`GET /api/users`（@RequestParam 接 keyword/page/pageSize/sort/order，后端做筛选→排序(Collator 中文)→分页，返回 `{list,total,page,pageSize}`）、`GET/POST/PUT/DELETE /api/users[/{id}]`。
+- `AuthFilter`（OncePerRequestFilter）：除 `/login` 外校验 `Authorization: Bearer`，缺失 401。
+- 内存数据，8 条种子用户与前端 mock 一致（含 XSS 测试数据）。
+
+### 4. 验证结果（前端真实路径：相对 /api → Vite 代理 5173 → 真后端 8080）
+
+```text
+mvn package      成功，生成可执行 jar（内嵌 Tomcat），3 秒启动
+直连 8080         无 token 401 / 错误密码 401 / 登录发 token / 分页 total=8 正确
+经 Vite 代理跑通：
+  A 无 token /users -> 401      B 登录 -> token
+  C name 降序第2页 -> total=8   D 搜索"张" -> total=1
+  E 新增 -> id=9               F 编辑 id=1 -> 超级管理员
+  G 删除 id=2 -> 204           H 复查总数 -> 8（增删改真持久化）
+```
+
+整套鉴权+分页/排序/搜索+CRUD 在真后端逐条跑通；切换只改了一个环境变量，业务代码零改。
+（React UI 浏览器点击因环境无浏览器未做；UI 驱动的 HTTP 链路已用 curl 经代理逐条验证。）
+
+### 5. 收尾
+
+跑完把 `VITE_USE_MOCK` 改回 `true`（默认走 mock，前端独立开发 + E2E 可用）；真后端按 `backend/README.md` 随时可再开。停掉了验证用的后台进程（8080/5173 已关闭）。
+
+---
+
 ## 2026-06-13 会话记录（十）：结业复盘与阶段验收
 
 ### 1. 本次目标

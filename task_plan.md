@@ -140,7 +140,7 @@ UI = f(state)
 - [x] 学习请求拦截与统一错误处理（`request.ts` 统一状态码判断 + `ApiError` + 请求拦截带 token + 响应拦截 401 统一跳登录）。
 - [x] 学习分页、筛选、排序（后端真分页 `PageResult<T>` + `useSearchParams` 把查询条件同步到 URL，详见 `week-04-4-pagination-filter-sort-notes.md`）。
 - [x] 学习表单抽象（抽出可复用的 `useForm` 自定义 Hook + 独立校验函数，并补 `UserForm` 组件测试，详见 `week-04-6-form-abstraction-component-testing-notes.md`）。
-- [x] 与 Spring Boot REST API 完成联调（CORS 原理 + Vite 开发代理 + mock 平滑切真后端 + 接口对齐排查方法论，详见 `week-04-8-spring-boot-integration-notes.md`；联调配置与方法论就绪，连真实后端的最后一步待后端环境）。
+- [x] 与 Spring Boot REST API 完成联调（已真写 `backend/` 最小 Spring Boot 后端并切 `VITE_USE_MOCK=false`，经 Vite 代理跑通鉴权+分页/排序/搜索+CRUD 全链路；详见 `week-04-8-spring-boot-integration-notes.md` §7 与 `backend/README.md`）。
 - [x] 学习构建与部署（`npm run build` 产物 / hash 缓存失效 / 环境变量构建时焊死 / SPA history 回退 / 多阶段 Dockerfile + Nginx，详见 `week-04-7-build-and-deploy-notes.md`）。
 - [x] 引入 Vitest 做基础单元测试（request 层 7 条 + fetchUsers query 拼接 4 条 + token 存储 3 条，共 14 条，详见 `week-04-5-vitest-testing-notes.md`）。
 - [x] 引入 Playwright 做端到端测试（覆盖登录→列表→分页→搜索→编辑→登出主流程，跑在 mock 模式无需真后端；详见 `week-04-9-playwright-e2e-notes.md`。用例与配置已就绪并通过 `--list` 校验；本环境因网络策略屏蔽浏览器下载未能实跑，待有浏览器的环境执行）。
@@ -181,4 +181,4 @@ UI = f(state)
 3. 权限系统（RBAC）：角色驱动的菜单/按钮级权限、路由按权限动态生成。
 4. 性能：路由级代码分割（lazy + Suspense）、请求缓存（TanStack Query）。
 5. 工程质量：覆盖率门禁、可访问性（a11y）、国际化（i18n）、错误监控。
-6. 接真实 Spring Boot 跑通联调最后一步（`VITE_USE_MOCK=false`）。
+6. （已完成）接真实 Spring Boot 跑通联调最后一步：见 `backend/` + `week-04-8` §7。

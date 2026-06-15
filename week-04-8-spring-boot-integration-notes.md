@@ -170,18 +170,41 @@ B. 后端开启 CORS：前端用绝对地址直连后端域名，后端允许该
 本项目 .env.production 目前用绝对地址（方案 B 的形态），真上线按部署架构二选一即可。
 ```
 
-## 7. 验证结果
+## 7. 实测：接真实 Spring Boot 跑通
+
+后来在 `backend/` 真写了一个最小 Spring Boot 后端（JDK 21 + Maven，内嵌 Tomcat，监听 8080，
+`context-path=/api`，实现登录/Bearer 鉴权/筛选排序分页/CRUD，种子数据与 mock 一致），
+并真正把 `VITE_USE_MOCK` 切成 `false` 跑通了整条链路。后端结构见 `backend/README.md`。
+
+后端关键实现（对照前端契约）：
 
 ```text
-npm run build   成功（286 个模块）
-npm test        18 passed
-npm run dev     启动正常（5173）；
-  GET /          200（页面入口）
-  GET /api/users 500（curl 不跑 JS，请求经代理转发到未启动的 8080，连接失败）
-                 -> 正好证明代理已生效；浏览器 mock 模式下 MSW 会更早拦截
+@RestController            UserController：/login + /users 增删改查
+@PostMapping("/login")     校验 admin/123456，返回 {token}，错误 401
+@GetMapping("/users")      @RequestParam 接 keyword/page/pageSize/sort/order，
+                           后端做"筛选->排序(Collator 中文)->分页"，返回 {list,total,page,pageSize}
+OncePerRequestFilter       AuthFilter：除 /login 外校验 Authorization: Bearer，缺失 401
 ```
 
-说明：本环境没有真实 Spring Boot，无法跑通"切 false 连真后端"的最后一步；代理与切换方案已就绪，待有后端环境时按 §4 操作即可。
+实测（前端请求的真实路径：相对 /api -> Vite 代理 5173 -> 真后端 8080）：
+
+```text
+A 无 token 取 /users                      -> 401（真后端鉴权生效）
+B 登录 admin/123456                        -> 拿到 token
+C 带 token、name 降序第 2 页               -> total=8，正确返回该页
+D 搜索 keyword=张                          -> total=1（张三）
+E 新增钱多多                               -> created id=9
+F 编辑 id=1 角色                           -> 超级管理员（有状态）
+G 删除 id=2                                -> 204
+H 复查总数                                 -> 8（原 8 +1 新增 −1 删除，增删改真持久化）
+```
+
+结论：前端 request 层产生的整套 HTTP 调用（鉴权 + 分页/排序/搜索 + CRUD），在真实 Spring Boot 上
+逐条跑通；MSW 写得像真后端，所以这一步只改了一个环境变量、业务代码一行没动。
+（React UI 的浏览器点击因环境无浏览器未做；但 UI 驱动的 HTTP 链路已被 curl 经代理逐条验证。）
+
+跑完后把 `VITE_USE_MOCK` 改回 `true` 作为默认（前端可独立开发、E2E 也走 mock），
+真后端按 `backend/README.md` 的步骤随时可再开。
 
 ## 8. 本节小结
 
